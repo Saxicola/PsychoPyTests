@@ -4,11 +4,14 @@
 # But not these files...
 !.gitignore
 !*.py
+*_lastrun.py
 
 # csv soubory, ktere nacita psychopy
 !*.csv
 # ale ignoruj datove csv, ktere tvori psychopy
 */**/data/*.csv
 
+
 # ...even if they are in subdirectories
 !*/
+
