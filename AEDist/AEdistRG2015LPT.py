@@ -31,7 +31,7 @@ expInfo['date'] = data.getDateStr()  # add a simple timestamp
 expInfo['expName'] = expName
 
 # Setup filename for saving
-filename = u'data' + os.path.sep + '%s_%s' %(expInfo['participant'], expInfo['date'])
+filename = u'data' + os.path.sep + '%s_%s_%s' %(expInfo['participant'], expInfo['expName'], expInfo['date'])
 
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
@@ -117,7 +117,7 @@ blokkonecClock = core.Clock()
 #inicializace promenne
 corrans_bk = ''
 text_bk = visual.TextStim(win=win, ori=0, name='text_bk',
-    text=u'O jaký se jednalo blok?\n\u25c4   blíž k Vám\n\u25ba   blíž ke značce\n\u25b2   červený cíl',    font=u'Arial',
+    text=u'O jaký se jednalo blok?\n\u25c4   blíž k Vám\n\u25ba   blíž ke značce\n\u25b2   červená',    font=u'Arial',
     pos=[0, 0], height=0.1, wrapWidth=None,
     color=u'white', colorSpace=u'rgb', opacity=1,
     depth=-1.0)
@@ -183,7 +183,7 @@ for thisTrial in trials:
         elif podle=='znacka':
             textNapoveda = u'blíž ke značce'
         else:
-            textNapoveda = u'červený cíl'
+            textNapoveda = u'červená'
         
         text.setText(textNapoveda
 )
