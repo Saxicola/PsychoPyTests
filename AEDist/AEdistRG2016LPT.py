@@ -21,6 +21,11 @@ pport_addrr = 0x2FF8 #0x0378 - pocitac #0x2FF8 - notebook
 pport.Out32(pport_addrr, 4) # sets pin no.3 to high
 pport.Out32(pport_addrr+2, 0) # strobe off
 
+sumascore = 0; #soucet score pro vypocet prumeru #kamil 25.1.2016
+sumart = 0;    #soucet reakcnich casu pro vypocet prumeru
+pokusy = 0; #pocet zapocitanych trials
+textScore = 'nic';
+
 # Store info about the experiment session
 # Verze 2015-05 s otázkou na typ bloku na jeho konci + jistoty odpovedi + vyrovnanem poradi bloku + casem 1.5 obr + 1.0s krizek
 expName = 'AEdist201601'  # from the Builder filename that created this script
@@ -77,6 +82,11 @@ text3 = visual.TextStim(win=win, ori=0, name='text3',
     text='default text',    font='Arial',
     pos=[0, -0.6], height=0.1, wrapWidth=None,
     color='white', colorSpace='rgb', opacity=1,
+    depth=-3.0)
+text4 = visual.TextStim(win=win, ori=0, name='text4',
+    text='default text',    font='Arial',
+    pos=[0, -0.65], height=0.07, wrapWidth=None,
+    color='green', colorSpace='rgb', opacity=1,
     depth=-3.0)
 
 # Initialize components for Routine "precross"
@@ -184,10 +194,9 @@ for thisTrial in trials:
             textNapoveda = u'blíž ke značce'
         else:
             textNapoveda = u'červená'
-        
-        text.setText(textNapoveda
-)
-        text3.setText(opakovani)
+              
+        text.setText(textNapoveda)
+        text3.setText( str(opakovani) + ' / 8')
         respNapoveda = event.BuilderKeyResponse()  # create an object of type KeyResponse
         respNapoveda.status = NOT_STARTED
         # keep track of which components have finished
@@ -229,7 +238,8 @@ for thisTrial in trials:
                 text3.tStart = t  # underestimates by a little under one frame
                 text3.frameNStart = frameN  # exact frame index
                 text3.setAutoDraw(True)
-            
+                
+                
             # *respNapoveda* updates
             if t >= 0.5 and respNapoveda.status == NOT_STARTED:
                 # keep track of start time/frame for later
@@ -407,6 +417,9 @@ for thisTrial in trials:
                 #odpoved v tehle verzi nekonci trial
                 pport.Out32(pport_addrr, 4) # sets pin no.3 to high
                 pport.Out32(pport_addrr+2, 0) # strobe off
+                sumascore += odpoved.corr;
+                sumart += odpoved.rt;
+                pokusy += 1;
 
         
         # *test_cross* updates
@@ -422,6 +435,8 @@ for thisTrial in trials:
                 #pokud nestlacil klavesu, musim dat stejne strobe off  - 1.10.2014
                 pport.Out32(pport_addrr, 4) # sets pin no.3 to high
                 pport.Out32(pport_addrr+2, 0) # strobe off
+                pokusy += 1;
+                sumart += 3; #3s cas reakce pokus nestlacil klavesu
 
 
         # *ISI* period
@@ -582,11 +597,20 @@ for thisTrial in trials:
             corrans_bk = 'right'
         else:
             corrans_bk = 'up'
+        if pokusy > 0:
+            textScore     = '\n' + u'skóre: ' + ( "%.0f" % (sumascore/pokusy*100)) + ' %';
+            textScore += '\n' + u'čas reakce: ' + ( "%.0f" %  (sumart/pokusy*1000) ) + ' ms';
+        text4.setText(textScore)
+        sumascore = 0; # v kazdem bloku pocitam znova
+        sumart = 0;
+        pokusy = 0;
+        
         key_resp_bk = event.BuilderKeyResponse()  # create an object of type KeyResponse
         key_resp_bk.status = NOT_STARTED
         # keep track of which components have finished
         blokkonecComponents = []
         blokkonecComponents.append(text_bk)
+        blokkonecComponents.append(text4)
         blokkonecComponents.append(key_resp_bk)
         for thisComponent in blokkonecComponents:
             if hasattr(thisComponent, 'status'):
@@ -600,7 +624,13 @@ for thisTrial in trials:
             frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
             # update/draw components on each frame
             
-            
+            # *text4* updates
+            if t >= 0.0 and text4.status == NOT_STARTED:
+                # keep track of start time/frame for later
+                text4.tStart = t  # underestimates by a little under one frame
+                text4.frameNStart = frameN  # exact frame index
+                text4.setAutoDraw(True)
+                
             # *text_bk* updates
             if t >= 0.0 and text_bk.status == NOT_STARTED:
                 # keep track of start time/frame for later
