@@ -15,7 +15,8 @@ from numpy import sin, cos, tan, log, log10, pi, average, sqrt, std, deg2rad, ra
 from numpy.random import random, randint, normal, shuffle
 import os  # handy system and path functions
 
-from ctypes import windll #kamil
+#kamil =====================================
+from ctypes import windll 
 pport = windll.inpout32
 pport_addrr = 0x2FF8 #0x0378 - pocitac #0x2FF8 - notebook
 pport.Out32(pport_addrr, 4) # sets pin no.3 to high
@@ -24,6 +25,8 @@ pport.Out32(pport_addrr+2, 0) # strobe off
 sumascore = 0; #soucet score pro vypocet prumeru #kamil 25.1.2016
 sumart = 0;    #soucet reakcnich casu pro vypocet prumeru
 pokusy = 0; #pocet zapocitanych trials
+vynechanych = 0; #pocet nezmacknutych klaves = (trials bez zmacknute klavesy)
+stlaceno = -1; # v tomto trialu stlacena klavesa?
 textScore = 'nic';
 
 # Store info about the experiment session
@@ -66,7 +69,7 @@ else:
 
 # Initialize components for Routine "napoveda"
 napovedaClock = core.Clock()
-#inicializace na zacatku
+#inicializace na zacatku  =====================================
 textNapoveda=u'ahoj'
 text = visual.TextStim(win=win, ori=0, name='text',
     text='default text',    font='Arial',
@@ -83,6 +86,7 @@ text3 = visual.TextStim(win=win, ori=0, name='text3',
     pos=[0, -0.6], height=0.1, wrapWidth=None,
     color='white', colorSpace='rgb', opacity=1,
     depth=-3.0)
+#text napovedy -   25.1.2016  =====================================
 text4 = visual.TextStim(win=win, ori=0, name='text4',
     text='default text',    font='Arial',
     pos=[0, -0.65], height=0.07, wrapWidth=None,
@@ -183,7 +187,7 @@ for thisTrial in trials:
             for paramName in thisLoopPauza.keys():
                 exec(paramName + '= thisLoopPauza.' + paramName)
         
-        #------Prepare to start Routine "napoveda"-------
+        #------Prepare to start Routine "napoveda"-------   ******************************************************
         t = 0
         napovedaClock.reset()  # clock 
         frameN = -1
@@ -197,6 +201,11 @@ for thisTrial in trials:
               
         text.setText(textNapoveda)
         text3.setText( str(opakovani) + ' / 8')
+        sumascore = 0; # v kazdem bloku pocitam znova 26.1.2016  =====================================
+        sumart = 0;
+        pokusy = 0;
+        vynechanych = 0;
+        
         respNapoveda = event.BuilderKeyResponse()  # create an object of type KeyResponse
         respNapoveda.status = NOT_STARTED
         # keep track of which components have finished
@@ -209,7 +218,7 @@ for thisTrial in trials:
             if hasattr(thisComponent, 'status'):
                 thisComponent.status = NOT_STARTED
         
-        #-------Start Routine "napoveda"-------
+        #-------Start Routine "napoveda"------- ******************************************************
         continueRoutine = True
         while continueRoutine:
             # get current time
@@ -294,7 +303,7 @@ for thisTrial in trials:
         if respNapoveda.keys != None:  # we had a response
             loopPauza.addData('respNapoveda.rt', respNapoveda.rt)
         
-        #------Prepare to start Routine "precross"-------
+        #------Prepare to start Routine "precross"-------  ******************************************************
         t = 0
         precrossClock.reset()  # clock 
         frameN = -1
@@ -307,7 +316,7 @@ for thisTrial in trials:
             if hasattr(thisComponent, 'status'):
                 thisComponent.status = NOT_STARTED
         
-        #-------Start Routine "precross"-------
+        #-------Start Routine "precross"-------      ******************************************************
         continueRoutine = True
         while continueRoutine and routineTimer.getTime() > 0:
             # get current time
@@ -350,11 +359,12 @@ for thisTrial in trials:
         
     # completed pauza repeats of 'loopPauza'
     
-    
-    #------Prepare to start Routine "trial"-------
+#     
+    #------Prepare to start Routine "trial"-------    ******************************************************
     t = 0
     trialClock.reset()  # clock 
     frameN = -1
+    stlaceno = 0; #v tomto trialu jeste nestlacil klavesu  =====================================
     # update component parameters for each repeat
     image.setImage('images2016/'+obrazek)
     odpoved = event.BuilderKeyResponse()  # create an object of type KeyResponse
@@ -369,7 +379,7 @@ for thisTrial in trials:
         if hasattr(thisComponent, 'status'):
             thisComponent.status = NOT_STARTED
     
-    #-------Start Routine "trial"-------
+    #-------Start Routine "trial"-------    ******************************************************
     continueRoutine = True
     while continueRoutine:
         # get current time
@@ -417,10 +427,10 @@ for thisTrial in trials:
                 #odpoved v tehle verzi nekonci trial
                 pport.Out32(pport_addrr, 4) # sets pin no.3 to high
                 pport.Out32(pport_addrr+2, 0) # strobe off
-                sumascore += odpoved.corr;
                 sumart += odpoved.rt;
-                pokusy += 1;
-
+                sumascore += odpoved.corr;
+                pokusy += 1; #pocitam jen pokusy kdy stlacil klavesu
+                stlaceno = 1;
         
         # *test_cross* updates
         if t >= 1.5 and test_cross.status == NOT_STARTED:
@@ -431,13 +441,14 @@ for thisTrial in trials:
         elif test_cross.status == STARTED and t >= (1.0 + (1.0-win.monitorFramePeriod*0.75)): #most of one frame period left
             test_cross.setAutoDraw(False)
             continueRoutine = False #kamil - po tehle komponente chci ukoncit, at zmacknul klavesu nebo ne
-            if len(theseKeys) == 0: #nestlacil klavesu
+                     
+            
+            if len(theseKeys) == 0 and stlaceno==0: #nestlacil klavesu
                 #pokud nestlacil klavesu, musim dat stejne strobe off  - 1.10.2014
                 pport.Out32(pport_addrr, 4) # sets pin no.3 to high
                 pport.Out32(pport_addrr+2, 0) # strobe off
-                pokusy += 1;
-                sumart += 3; #3s cas reakce pokus nestlacil klavesu
-
+                vynechanych += 1;
+                
 
         # *ISI* period
         if t >= 0.0 and ISI.status == NOT_STARTED:
@@ -503,7 +514,7 @@ for thisTrial in trials:
             for paramName in thisLoopFeedback.keys():
                 exec(paramName + '= thisLoopFeedback.' + paramName)
         
-        #------Prepare to start Routine "feedback"-------
+        #------Prepare to start Routine "feedback"-------   ******************************************************
         t = 0
         feedbackClock.reset()  # clock 
         frameN = -1
@@ -521,7 +532,7 @@ for thisTrial in trials:
             if hasattr(thisComponent, 'status'):
                 thisComponent.status = NOT_STARTED
         
-        #-------Start Routine "feedback"-------
+        #-------Start Routine "feedback"-------        ******************************************************
         continueRoutine = True
         while continueRoutine and routineTimer.getTime() > 0:
             # get current time
@@ -586,7 +597,7 @@ for thisTrial in trials:
             for paramName in thisLoopBlokKonec.keys():
                 exec(paramName + '= thisLoopBlokKonec.' + paramName)
         
-        #------Prepare to start Routine "blokkonec"-------
+        #------Prepare to start Routine "blokkonec"-------    ******************************************************
         t = 0
         blokkonecClock.reset()  # clock 
         frameN = -1
@@ -598,12 +609,13 @@ for thisTrial in trials:
         else:
             corrans_bk = 'up'
         if pokusy > 0:
-            textScore     = '\n' + u'skóre: ' + ( "%.0f" % (sumascore/pokusy*100)) + ' %';
+            textScore     = '\n' + u'skóre: ' + ( "%.0f" % (sumascore/pokusy*100)) + ' % z ' + str(pokusy) + u' pokusů';
             textScore += '\n' + u'čas reakce: ' + ( "%.0f" %  (sumart/pokusy*1000) ) + ' ms';
+            textScore += u'\nvynechaných pokusů: ' +  str(vynechanych);
+        elif vynechanych > 0:
+        	  textScore = u'vynechaných pokusů: ' + str(vynechanych);
         text4.setText(textScore)
-        sumascore = 0; # v kazdem bloku pocitam znova
-        sumart = 0;
-        pokusy = 0;
+
         
         key_resp_bk = event.BuilderKeyResponse()  # create an object of type KeyResponse
         key_resp_bk.status = NOT_STARTED
@@ -616,7 +628,7 @@ for thisTrial in trials:
             if hasattr(thisComponent, 'status'):
                 thisComponent.status = NOT_STARTED
         
-        #-------Start Routine "blokkonec"-------
+        #-------Start Routine "blokkonec"-------     ******************************************************
         continueRoutine = True
         while continueRoutine:
             # get current time
@@ -701,7 +713,7 @@ for thisTrial in trials:
         if key_resp_bk.keys != None:  # we had a response
             loopBlokKonec.addData('key_resp_bk.rt', key_resp_bk.rt)
         
-        #------Prepare to start Routine "jistota"-------
+        #------Prepare to start Routine "jistota"-------     ******************************************************
         t = 0
         jistotaClock.reset()  # clock 
         frameN = -1
@@ -715,7 +727,7 @@ for thisTrial in trials:
             if hasattr(thisComponent, 'status'):
                 thisComponent.status = NOT_STARTED
         
-        #-------Start Routine "jistota"-------
+        #-------Start Routine "jistota"-------       ******************************************************
         continueRoutine = True
         while continueRoutine:
             # get current time
