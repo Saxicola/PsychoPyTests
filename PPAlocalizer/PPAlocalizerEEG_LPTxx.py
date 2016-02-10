@@ -23,6 +23,10 @@ pport_addrr = 0x2FF8 #0x0378 - pocitac #0x2FF8 - notebook
 pport.Out32(pport_addrr, 4) # sets pin no.3 to high
 pport.Out32(pport_addrr+2, 0) # strobe off  
 
+blokcislo = 0;
+ovocebylo = 0;
+ovocenalezeno = 0;
+
 # Store info about the experiment session
 expName = 'PPAlocalizerEEG'  # from the Builder filename that created this script
 expInfo = {'participant':'', 'session':'001'}
@@ -68,7 +72,13 @@ krizek_pauza = visual.ImageStim(win=win, name='krizek_pauza',
     color=[1,1,1], colorSpace='rgb', opacity=1,
     flipHoriz=False, flipVert=False,
     texRes=128, interpolate=False, depth=0.0)
-
+#text napovedy -   25.1.2016  =====================================
+text4 = visual.TextStim(win=win, ori=0, name='text4',
+    text='default text',    font='Arial',
+    pos=[0, -0.75], height=0.07, wrapWidth=None,
+    color='green', colorSpace='rgb', opacity=1,
+    depth=-3.0)
+    
 # Initialize components for Routine "trial"
 trialClock = core.Clock()
 image = visual.ImageStim(win=win, name='image',
@@ -135,10 +145,15 @@ for thisTrial in trials:
         pauzaClock.reset()  # clock 
         frameN = -1
         routineTimer.add(3.000000)
+        blokcislo += 1
         # update component parameters for each repeat
         # keep track of which components have finished
         pauzaComponents = []
         pauzaComponents.append(krizek_pauza)
+        textScore = 'blok ' + str(blokcislo) + '/65'
+        textScore += '\novoce: ' + str(ovocenalezeno) + '/' + str(ovocebylo)
+        text4.setText(textScore)
+        pauzaComponents.append(text4)
         for thisComponent in pauzaComponents:
             if hasattr(thisComponent, 'status'):
                 thisComponent.status = NOT_STARTED
@@ -159,7 +174,16 @@ for thisTrial in trials:
                 krizek_pauza.setAutoDraw(True)
             elif krizek_pauza.status == STARTED and t >= (2.0 + (1.0-win.monitorFramePeriod*0.75)): #most of one frame period left
                 krizek_pauza.setAutoDraw(False)
-            
+          
+            # *text4* updates
+            if t >= 0.0 and text4.status == NOT_STARTED:
+                # keep track of start time/frame for later
+                text4.tStart = t  # underestimates by a little under one frame
+                text4.frameNStart = frameN  # exact frame index
+                text4.setAutoDraw(True)
+            elif text4.status == STARTED and t >= (0.0 + (2.0-win.monitorFramePeriod*0.75)): #most of one frame period left
+                text4.setAutoDraw(False)
+                
             # check if all components have finished
             if not continueRoutine:  # a component has requested a forced-end of Routine
                 routineTimer.reset()  # if we abort early the non-slip timer needs reset
@@ -192,6 +216,9 @@ for thisTrial in trials:
     trialClock.reset()  # clock 
     frameN = -1
     routineTimer.add(1.000000)
+    if corrans == 1:
+        ovocebylo += 1
+    
     # update component parameters for each repeat
     image.setImage('imagesFMRI/'+obrazek)
     odpoved = event.BuilderKeyResponse()  # create an object of type KeyResponse
@@ -238,7 +265,7 @@ for thisTrial in trials:
         elif odpoved.status == STARTED and t >= (0.0 + (1.0-win.monitorFramePeriod*0.75)): #most of one frame period left
             odpoved.status = STOPPED
         if odpoved.status == STARTED:
-            theseKeys = event.getKeys(keyList=['space'])
+            theseKeys = event.getKeys(keyList=['space'])         
             
             # check for quit:
             if "escape" in theseKeys:
@@ -246,9 +273,11 @@ for thisTrial in trials:
             if len(theseKeys) > 0:  # at least one key was pressed
                 odpoved.keys = theseKeys[-1]  # just the last key pressed
                 odpoved.rt = odpoved.clock.getTime()
+                #print 'odpoved.keys' + odpoved.keys
                 # was this 'correct'?
-                if (odpoved.keys == str(corrans)) or (odpoved.keys == corrans):
+                if odpoved.keys == 'space' and corrans==1:
                     odpoved.corr = 1
+                    ovocenalezeno += 1
                 else:
                     odpoved.corr = 0
                 # a response ends the routine
