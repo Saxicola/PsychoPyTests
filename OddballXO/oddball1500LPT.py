@@ -17,7 +17,7 @@ import os  # handy system and path functions
 
 from ctypes import windll #kamil
 pport = windll.inpout32
-pport_addrr = 0x2008 #0x2FF8 #0x0378 - pocitac #0x2FF8 - notebook #0xDC00 - novy experimentalni pocitac
+pport_addrr = 0x2FF8 #0x2FF8 #0x0378 0x2008 - pocitac #0x2FF8 - notebook #0xDC00 - novy experimentalni pocitac
 pport_byte0 = 0 #hodnota portu v klidu - pred podnetem a po odpovedi
 pport.Out32(pport_addrr, pport_byte0) # sets pin no.3 to high
 pport.Out32(pport_addrr+2, 0) # strobe off
