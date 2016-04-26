@@ -22,6 +22,9 @@ dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 if dlg.OK == False: core.quit()  # user pressed cancel
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
 expInfo['expName'] = expName
+bilyvlevo = randint(0,1); #nahodne urcim, jestli bily ctverec bud pro sipku vlevo nebo vpravo
+expInfo['bilyvlevo']=bilyvlevo
+
 
 # Setup filename for saving
 filename = 'data/%s_%s_%s' %(expInfo['participant'], expName, expInfo['date'])
@@ -231,11 +234,17 @@ for thisTrial in trials:
     frameN = -1
     # update component parameters for each repeat
     if doleva==1:
-        Vsipka='<='
-        ctverecname = "whitesquare.png"
+        Vsipka='< '
+        if bilyvlevo:
+            ctverecname = "whitesquare.png"
+        else:
+            ctverecname = "blacksquare.png"
     else:
-        Vsipka='=>'
-        ctverecname = "blacksquare.png"   
+        Vsipka=' >'
+        if bilyvlevo:
+            ctverecname = "blacksquare.png" 
+        else:
+            ctverecname = "whitesquare.png"
     
     if nahore==1:
         sipkay=0.0
@@ -301,7 +310,9 @@ for thisTrial in trials:
             # keep track of start time/frame for later
             text_sipka.tStart = t  # underestimates by a little under one frame
             text_sipka.frameNStart = frameN  # exact frame index
-            text_sipka.setAutoDraw(True)
+            if sipkaframu > 0: #pokud sipka na 0 framu, nebudu ji vubec zobrazovat 
+                text_sipka.setAutoDraw(True)
+
         elif text_sipka.status == STARTED and frameN >= (text_sipka.frameNStart + sipkaframu):
             text_sipka.setAutoDraw(False)
         
@@ -332,7 +343,7 @@ for thisTrial in trials:
                 continueRoutine = False
         
         # *bilyctverec* updates
-        if frameN >= 60 and bilyctverec.status == NOT_STARTED:
+        if frameN >= 60 and bilyctverec.status == NOT_STARTED and sipkaframu<=2:
             # keep track of start time/frame for later
             bilyctverec.tStart = t  # underestimates by a little under one frame
             bilyctverec.frameNStart = frameN  # exact frame index

@@ -7,7 +7,7 @@ doleva,corrans,sipkaframu,nahore,pauza,blok,no,no2
 1,left,6,1,0,0,-2,-2
 1,left,6,0,0,0,-1,-1
 0,right,6,1,0,0,0,0
-1,left,2,1,0,0,2,25
+1,left,2,1,1,0,2,25
 0,right,1,1,0,0,4,25
 1,left,1,0,0,0,6,26
 0,right,1,1,0,0,7,27
@@ -52,7 +52,7 @@ doleva,corrans,sipkaframu,nahore,pauza,blok,no,no2
 1,left,1,1,0,0,81,63
 1,left,1,1,0,0,88,64
 1,left,2,1,0,0,41,65
-1,left,1,1,1,0,89,65
+1,left,1,1,0,0,89,65
 1,left,1,1,0,0,91,66
 0,right,1,1,0,0,93,67
 1,left,1,1,0,0,94,68
@@ -95,8 +95,8 @@ doleva,corrans,sipkaframu,nahore,pauza,blok,no,no2
 1,left,1,1,0,0,165,102
 0,right,1,1,0,0,167,103
 1,left,1,1,0,0,171,104
-1,left,2,1,0,0,85,105
-0,right,0,0,1,0,1,105
+1,left,2,1,1,0,85,105
+0,right,0,0,0,0,1,105
 1,left,0,0,0,0,86,106
 1,left,1,0,0,0,234,107
 0,right,1,1,0,0,220,108
@@ -151,7 +151,7 @@ doleva,corrans,sipkaframu,nahore,pauza,blok,no,no2
 0,right,0,0,0,0,43,153
 1,left,1,0,0,0,197,154
 0,right,2,1,0,0,133,155
-0,right,1,0,1,0,177,155
+0,right,1,0,0,0,177,155
 1,left,0,0,0,0,11,156
 1,left,0,0,0,0,83,157
 0,right,0,1,0,0,66,158
@@ -183,7 +183,7 @@ doleva,corrans,sipkaframu,nahore,pauza,blok,no,no2
 1,left,1,1,0,0,206,182
 0,right,0,1,0,0,42,183
 0,right,0,0,0,0,62,184
-0,right,2,0,0,0,168,185
+0,right,2,0,1,0,168,185
 0,right,0,1,0,0,100,185
 1,left,0,1,0,0,103,186
 0,right,0,1,0,0,104,187
