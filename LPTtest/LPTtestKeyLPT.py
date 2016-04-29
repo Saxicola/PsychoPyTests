@@ -16,13 +16,14 @@ from numpy.random import random, randint, normal, shuffle
 import os  # handy system and path functions
 
 
-# testovani LPT portu - klavesy 1-8 to posila na obrazovku a soucasne na odpovidajici pin 1-8 portu
+# testovani LPT portu - klavesy 1-8 to posila na obrazovku a soucasne na odpovidajici udalosti na pinech 1-4 portu
 from ctypes import windll #kamil
 pport = windll.inpout32
 pport_addrr = 0x2FF8 #0x2FF8 #0x0378 0x2008 - pocitac #0x2FF8 - notebook #0xDC00 - novy experimentalni pocitac
 pport_byte0 = 0 #hodnota portu v klidu - pred podnetem a po odpovedi
-pport.Out32(pport_addrr, pport_byte0) # sets pin no.3 to high
-pport.Out32(pport_addrr+2, 0) # strobe off
+pport_byte = pport_byte0; #aktualni hodnota portu
+pport.Out32(pport_addrr, pport_byte) # sets pin no.3 to high
+#pport.Out32(pport_addrr+2, 0) # strobe off
 
 # Store info about the experiment session
 expName = 'LPTtestKey'  # from the Builder filename that created this script
@@ -113,6 +114,11 @@ for thisTrial in trials:
     trialComponents.append(ISI)
     trialComponents.append(text)
     trialComponents.append(key_resp2)
+    
+    #kamil - budu stale zobrazovat binarni hodnotu
+    TText = bin(pport_byte);
+    text.setText(TText);
+    
     for thisComponent in trialComponents:
         if hasattr(thisComponent, 'status'):
             thisComponent.status = NOT_STARTED
@@ -197,37 +203,28 @@ for thisTrial in trials:
     t = 0
     odpovedClock.reset()  # clock 
     frameN = -1
-    routineTimer.add(1.000000)
+    routineTimer.add(0.100000) #delka delay po zapisu na port
     
     if key_resp2.keys== 'num_1':
-        TText = 1;
-        pport_byte = 1;
+        pport_byte = pport_byte ^ 1;  #0b001 binarni XOR
     elif key_resp2.keys== 'num_2':
-        TText = 2;
-        pport_byte = 2;
+        pport_byte = pport_byte ^ 2;  #0b010 binarni XOR
     elif key_resp2.keys== 'num_3':
-        TText = 3;
-        pport_byte = 4;
+        pport_byte = pport_byte ^ 3;  #0b011 binarni XOR
     elif key_resp2.keys== 'num_4':
-        TText = 4;
-        pport_byte = 8;
+        pport_byte = pport_byte ^ 4;  #0b100 binarni XOR
     elif key_resp2.keys== 'num_5':
-        TText = 5;
-        pport_byte = 16;
+        pport_byte = pport_byte ^ 5;  #0b100 binarni XOR
     elif key_resp2.keys== 'num_6':
-        TText = 6;
-        pport_byte = 32;
+        pport_byte = pport_byte ^ 6;  #0b110 binarni XOR
     elif key_resp2.keys== 'num_7':
-        TText = 7;
-        pport_byte = 64;
+        pport_byte = pport_byte ^ 7;   #0b111 binarni XOR
     elif key_resp2.keys== 'num_8':
-        TText = 8;
-        pport_byte = 128;
-    else:
-        TText = '-';
-        pport_byte = 0;
+        pport_byte = pport_byte ^ 8;   #0b1000 binarni XOR
     
     # update component parameters for each repeat
+    
+    TText = bin(pport_byte); #binarni aktualni hodnota, kterou zapisu na port 
     text_2.setText(TText)
     
     # keep track of which components have finished
@@ -240,7 +237,7 @@ for thisTrial in trials:
     #-------Start Routine "odpoved"-------
     continueRoutine = True
     while continueRoutine and routineTimer.getTime() > 0:
-        # get current time
+        # get current tim
         t = odpovedClock.getTime()
         frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
         # update/draw components on each frame
@@ -253,14 +250,14 @@ for thisTrial in trials:
             text_2.setAutoDraw(True)
             
             #kamil
-            pport.Out32(pport_addrr, pport_byte) # sets all pins to low
+            pport.Out32(pport_addrr, pport_byte) # vypis aktualni hodnotu
             #pport.Out32(pport_addrr+2, 1) # strobe on
             
-        elif text_2.status == STARTED and t >= (0.0 + (1.0-win.monitorFramePeriod*0.75)): #most of one frame period left
-            text_2.setAutoDraw(False)
+        elif text_2.status == STARTED and t >= (0.0 + (0.1-win.monitorFramePeriod*0.75)): #most of one frame period left
+            text_2.setAutoDraw(False) 
             
              #kamil
-            pport.Out32(pport_addrr, pport_byte0) # sets all pins to low
+            #pport.Out32(pport_addrr, pport_byte0) # sets all pins to low
             #pport.Out32(pport_addrr+2, 0) # strobe on
         
         # check if all components have finished
