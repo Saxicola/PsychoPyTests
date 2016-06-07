@@ -26,9 +26,10 @@ pport.Out32(pport_addrr+2, 0) # strobe off
 blokcislo = 0;
 ovocebylo = 0;
 ovocenalezeno = 0;
+reakcecas = 0;
 
 # Store info about the experiment session
-expName = 'PPAlocalizerEEG'  # from the Builder filename that created this script
+expName = 'PPAlocalizerEEG_LPT2016'  # from the Builder filename that created this script
 expInfo = {'participant':'', 'session':'001'}
 dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 if dlg.OK == False: core.quit()  # user pressed cancel
@@ -76,7 +77,7 @@ krizek_pauza = visual.ImageStim(win=win, name='krizek_pauza',
 text4 = visual.TextStim(win=win, ori=0, name='text4',
     text='default text',    font='Arial',
     pos=[0, -0.75], height=0.07, wrapWidth=None,
-    color='green', colorSpace='rgb', opacity=1,
+    color='blue', colorSpace='rgb', opacity=1,
     depth=-3.0)
     
 # Initialize components for Routine "trial"
@@ -144,7 +145,7 @@ for thisTrial in trials:
         t = 0
         pauzaClock.reset()  # clock 
         frameN = -1
-        routineTimer.add(3.000000)
+        
         blokcislo += 1
         # update component parameters for each repeat
         # keep track of which components have finished
@@ -152,7 +153,13 @@ for thisTrial in trials:
         pauzaComponents.append(krizek_pauza)
         textScore = 'blok ' + str(blokcislo) + '/65'
         textScore += '\novoce: ' + str(ovocenalezeno) + '/' + str(ovocebylo)
+        if reakcecas > 0: 
+            textScore +=  '\ncas reakce: ' + ( "%.0f" %  (reakcecas*1000) ) + ' ms'
+        elif reakcecas == -1:
+            textScore +=  '\npropasli jste ovoce nebo zeleninu'
+        
         text4.setText(textScore)
+        reakcecas = 0; #hodnotu vynuluju pred dalsim blokem
         pauzaComponents.append(text4)
         for thisComponent in pauzaComponents:
             if hasattr(thisComponent, 'status'):
@@ -160,19 +167,19 @@ for thisTrial in trials:
         
         #-------Start Routine "pauza"-------
         continueRoutine = True
-        while continueRoutine and routineTimer.getTime() > 0:
+        while continueRoutine  > 0:
             # get current time
             t = pauzaClock.getTime()
             frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
             # update/draw components on each frame
             
             # *krizek_pauza* updates
-            if t >= 2.0 and krizek_pauza.status == NOT_STARTED:
+            if frameN >= 120 and krizek_pauza.status == NOT_STARTED:
                 # keep track of start time/frame for later
                 krizek_pauza.tStart = t  # underestimates by a little under one frame
                 krizek_pauza.frameNStart = frameN  # exact frame index
                 krizek_pauza.setAutoDraw(True)
-            elif krizek_pauza.status == STARTED and t >= (2.0 + (1.0-win.monitorFramePeriod*0.75)): #most of one frame period left
+            elif krizek_pauza.status == STARTED and frameN >= (krizek_pauza.frameNStart + 60): #predelano na frames 60Hz 7.6.2016
                 krizek_pauza.setAutoDraw(False)
           
             # *text4* updates
@@ -201,6 +208,8 @@ for thisTrial in trials:
             # refresh the screen
             if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
                 win.flip()
+            else:  # this Routine was not non-slip safe so reset non-slip timer
+                routineTimer.reset()
         
         #-------Ending Routine "pauza"-------
         for thisComponent in pauzaComponents:
@@ -215,7 +224,7 @@ for thisTrial in trials:
     t = 0
     trialClock.reset()  # clock 
     frameN = -1
-    routineTimer.add(1.000000)
+    
     if corrans == 1:
         ovocebylo += 1
     
@@ -234,14 +243,14 @@ for thisTrial in trials:
     
     #-------Start Routine "trial"-------
     continueRoutine = True
-    while continueRoutine and routineTimer.getTime() > 0:
+    while continueRoutine:
         # get current time
         t = trialClock.getTime()
         frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
         # update/draw components on each frame
         
         # *image* updates
-        if t >= 0.0 and image.status == NOT_STARTED:
+        if frameN >= 0 and image.status == NOT_STARTED:
             # keep track of start time/frame for later
             image.tStart = t  # underestimates by a little under one frame
             image.frameNStart = frameN  # exact frame index
@@ -250,11 +259,11 @@ for thisTrial in trials:
             pport.Out32(pport_addrr, 255) # sets all pins to low
             pport.Out32(pport_addrr+2, 1) # strobe on
             
-        elif image.status == STARTED and t >= (0.0 + (.2-win.monitorFramePeriod*0.75)): #most of one frame period left
+        elif image.status == STARTED and frameN >= (image.frameNStart + 12): #predelano na frames - 7.6.2016
             image.setAutoDraw(False)
         
         # *odpoved* updates
-        if t >= 0.0 and odpoved.status == NOT_STARTED:
+        if frameN >= 0 and odpoved.status == NOT_STARTED:
             # keep track of start time/frame for later
             odpoved.tStart = t  # underestimates by a little under one frame
             odpoved.frameNStart = frameN  # exact frame index
@@ -262,7 +271,7 @@ for thisTrial in trials:
             # keyboard checking is just starting
             odpoved.clock.reset()  # now t=0
             event.clearEvents(eventType='keyboard')
-        elif odpoved.status == STARTED and t >= (0.0 + (1.0-win.monitorFramePeriod*0.75)): #most of one frame period left
+        elif odpoved.status == STARTED and frameN >= (odpoved.frameNStart + 60): #most of one frame period left
             odpoved.status = STOPPED
         if odpoved.status == STARTED:
             theseKeys = event.getKeys(keyList=['space'])         
@@ -275,9 +284,10 @@ for thisTrial in trials:
                 odpoved.rt = odpoved.clock.getTime()
                 #print 'odpoved.keys' + odpoved.keys
                 # was this 'correct'?
-                if odpoved.keys == 'space' and corrans==1:
+                if corrans==1 and odpoved.keys == 'space' :  #pokud mel stlacit mezernik   
                     odpoved.corr = 1
                     ovocenalezeno += 1
+                    reakcecas = odpoved.rt
                 else:
                     odpoved.corr = 0
                 # a response ends the routine
@@ -288,12 +298,12 @@ for thisTrial in trials:
                 pport.Out32(pport_addrr+2, 0) # strobe off
         
         # *krizek* updates
-        if t >= 0.2 and krizek.status == NOT_STARTED:
+        if frameN >= 12 and krizek.status == NOT_STARTED:
             # keep track of start time/frame for later
             krizek.tStart = t  # underestimates by a little under one frame
             krizek.frameNStart = frameN  # exact frame index
             krizek.setAutoDraw(True)
-        elif krizek.status == STARTED and t >= (0.2 + (0.8-win.monitorFramePeriod*0.75)): #most of one frame period left
+        elif krizek.status == STARTED and frameN >= (krizek.frameNStart + 48): #predelano na frames - 7.6.2016
             krizek.setAutoDraw(False)
             continueRoutine = False #kamil - po tehle komponente chci ukoncit, at zmacknul klavesu nebo ne
             
@@ -315,6 +325,8 @@ for thisTrial in trials:
         # refresh the screen
         if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
             win.flip()
+        else:  # this Routine was not non-slip safe so reset non-slip timer
+            routineTimer.reset()
     
     #-------Ending Routine "trial"-------
     for thisComponent in trialComponents:
@@ -324,8 +336,11 @@ for thisTrial in trials:
     if odpoved.keys in ['', [], None]:  # No response was made
        odpoved.keys=None
        # was no response the correct answer?!
-       if str(corrans).lower() == 'none': odpoved.corr = 1  # correct non-response
-       else: odpoved.corr = 0  # failed to respond (incorrectly)
+       if str(corrans).lower() == 'none' or corrans==0: 
+            odpoved.corr = 1  # correct non-response
+       else: 
+            odpoved.corr = 0  # failed to respond (incorrectly)
+            reakcecas = -1
     # store data for trials (TrialHandler)
     trials.addData('odpoved.keys',odpoved.keys)
     trials.addData('odpoved.corr', odpoved.corr)
@@ -336,7 +351,7 @@ for thisTrial in trials:
     t = 0
     pauza2Clock.reset()  # clock 
     frameN = -1
-    routineTimer.add(0.500000)
+    
     # update component parameters for each repeat
     # keep track of which components have finished
     pauza2Components = []
@@ -347,17 +362,17 @@ for thisTrial in trials:
     
     #-------Start Routine "pauza2"-------
     continueRoutine = True
-    while continueRoutine and routineTimer.getTime() > 0:
+    while continueRoutine:
         # get current time
         t = pauza2Clock.getTime()
         frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
         # update/draw components on each frame
         # *ISI* period
-        if t >= 0.0 and ISI.status == NOT_STARTED:
+        if frameN >= 0.0 and ISI.status == NOT_STARTED:
             # keep track of start time/frame for later
             ISI.tStart = t  # underestimates by a little under one frame
             ISI.frameNStart = frameN  # exact frame index
-            ISI.start(0.1)
+            ISI.start(3*frameDur)
             #if len(theseKeys) == 0: #nestlacil klavesu
             #pokud nestlacil klavesu, musim dat stejne strobe off  - 1.10.2014
             pport.Out32(pport_addrr, 4) # sets pin no.3 to high
@@ -382,6 +397,8 @@ for thisTrial in trials:
         # refresh the screen
         if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
             win.flip()
+        else:  # this Routine was not non-slip safe so reset non-slip timer
+            routineTimer.reset()   
     
     #-------Ending Routine "pauza2"-------
     for thisComponent in pauza2Components:
