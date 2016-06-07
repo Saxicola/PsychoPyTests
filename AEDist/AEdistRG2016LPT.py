@@ -143,7 +143,7 @@ text_jistota = visual.TextStim(win=win, ori=0, name='text_jistota',
     pos=[0, 0], height=0.1, wrapWidth=None,
     color=u'white', colorSpace=u'rgb', opacity=1,
     depth=0.0)
-rating_jistota = visual.RatingScale(win=win, name='rating_jistota', marker=u'triangle', size=1.0, pos=[0.0, -0.4], low=1, high=5, labels=[u''], scale=u'1=h\xe1d\xe1m, 5=jsem si jist\xfd/\xe1', markerStart=u'3')
+rating_jistota = visual.RatingScale(win=win, name='rating_jistota', marker=u'triangle', size=1.0, pos=[0.0, -0.4], low=1, high=3, labels=[u''], scale=u'1=h\xe1d\xe1m, 3=jsem si jist\xfd/\xe1', markerStart=u'2')
 
 # Create some handy timers
 globalClock = core.Clock()  # to track the time since experiment started
