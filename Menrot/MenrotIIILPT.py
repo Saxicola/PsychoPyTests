@@ -24,7 +24,7 @@ pport.Out32(pport_addrr+2, 0) # strobe off
 
 #oprava 1.10.2014
 # Store info about the experiment session
-expName = 'AEdist'  # from the Builder filename that created this script
+expName = 'MenrotIII'  # from the Builder filename that created this script
 expInfo = {u'session': u'001', u'participant': u''}
 dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 if dlg.OK == False: core.quit()  # user pressed cancel
