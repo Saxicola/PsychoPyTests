@@ -14,7 +14,20 @@ import numpy as np  # whole numpy lib is available, prepend 'np.'
 from numpy import sin, cos, tan, log, log10, pi, average, sqrt, std, deg2rad, rad2deg, linspace, asarray
 from numpy.random import random, randint, normal, shuffle
 import os  # handy system and path functions
-     
+    
+from ctypes import windll #kamil
+pport = windll.inpout32
+pport_addrr = 0x2FF8 #0x0378 - pocitac #0x2FF8 - notebook
+pport.Out32(pport_addrr, 4) # sets pin no.3 to high
+pport.Out32(pport_addrr+2, 0) # strobe off 
+ 
+sumascore = 0; #soucet score pro vypocet prumeru #kamil 8.6.2016
+sumart = 0;    #soucet reakcnich casu pro vypocet prumeru
+pokusy = 0; #pocet zapocitanych trials
+vynechanych = 0; #pocet nezmacknutych klaves = (trials bez zmacknute klavesy)
+stlaceno = -1; # v tomto trialu stlacena klavesa?
+textScore = 'nic';
+
 # Store info about the experiment session
 expName = 'MenrotIII2016'  # from the Builder filename that created this script
 expInfo = {u'session': u'001', u'participant': u''}
@@ -71,7 +84,12 @@ text3 = visual.TextStim(win=win, ori=0, name='text3',
     pos=[0, -0.6], height=0.1, wrapWidth=None,
     color='white', colorSpace='rgb', opacity=1,
     depth=-3.0)
-
+text4 = visual.TextStim(win=win, ori=0, name='text4',
+    text='default text',    font='Arial',
+    pos=[0, -0.65], height=0.07, wrapWidth=None,
+    color='green', colorSpace='rgb', opacity=1,
+    depth=-3.0)
+    
 # Initialize components for Routine "precross"
 precrossClock = core.Clock()
 text_precross = visual.TextStim(win=win, ori=0, name='text_precross',
@@ -117,12 +135,18 @@ text_bk = visual.TextStim(win=win, ori=0, name='text_bk',
 
 # Initialize components for Routine "jistota"
 jistotaClock = core.Clock()
+jistotavolba =u''
 text_jistota = visual.TextStim(win=win, ori=0, name='text_jistota',
     text=u'Jak jste si t\xedm jist\xfd/\xe1',    font='Arial',
     pos=[0, 0], height=0.1, wrapWidth=None,
     color='white', colorSpace='rgb', opacity=1,
     depth=0.0)
-rating_jistota = visual.RatingScale(win=win, name='rating_jistota', marker=u'triangle', size=1.0, pos=[0.0, -0.4], low=1, high=3, labels=[u''], scale=u'1=h\xe1d\xe1m, 3=jsem si jist\xfd/\xe1', markerStart=u'2')
+rating_jistota = visual.RatingScale(win=win, name='rating_jistota', marker=u'triangle', size=1.0, pos=[0.0, -0.4], low=1, high=3, labels=[u''], scale=u'1=spletl jsem se, 2=h\xe1d\xe1m, 3=jsem si jist\xfd/\xe1', markerStart=u'2')
+text_jistotavolba = visual.TextStim(win=win, ori=0, name='text_jistotavolba',
+    text='default text',    font='Arial',
+    pos=[0, 0.25], height=0.15, wrapWidth=None,
+    color='blue', colorSpace='rgb', opacity=1,
+    depth=-3.0)
 
 # Create some handy timers
 globalClock = core.Clock()  # to track the time since experiment started
@@ -131,7 +155,7 @@ routineTimer = core.CountdownTimer()  # to track time remaining of each (non-sli
 # set up handler to look after randomisation of conditions etc
 trials = data.TrialHandler(nReps=1, method='sequential', 
     extraInfo=expInfo, originPath=None,
-    trialList=data.importConditions('menrotIIIconditions.csv'),
+    trialList=data.importConditions('menrotIIIconditions2016.csv'),
     seed=None, name='trials')
 thisExp.addLoop(trials)  # add the loop to the experiment
 thisTrial = trials.trialList[0]  # so we can initialise stimuli with some values
@@ -185,6 +209,10 @@ for thisTrial in trials:
         text.setText(textNapoveda
 )
         text3.setText(opakovani)
+        sumascore = 0; # v kazdem bloku pocitam znova 8.6.2016  =====================================
+        sumart = 0;
+        pokusy = 0;
+        vynechanych = 0;
         respNapoveda = event.BuilderKeyResponse()  # create an object of type KeyResponse
         respNapoveda.status = NOT_STARTED
         # keep track of which components have finished
@@ -342,6 +370,7 @@ for thisTrial in trials:
     t = 0
     trialClock.reset()  # clock 
     frameN = -1
+    stlaceno = 0; #v tomto trialu jeste nestlacil klavesu
     # update component parameters for each repeat
     image.setImage('imagesR/'+obrazek)
     odpoved = event.BuilderKeyResponse()  # create an object of type KeyResponse
@@ -369,7 +398,11 @@ for thisTrial in trials:
             # keep track of start time/frame for later
             image.tStart = t  # underestimates by a little under one frame
             image.frameNStart = frameN  # exact frame index
-            image.setAutoDraw(True) 
+            image.setAutoDraw(True)
+            #kamil
+            pport.Out32(pport_addrr, 255) # sets all pins to low
+            pport.Out32(pport_addrr+2, 1) # strobe on
+             
         elif image.status == STARTED and t >= (0 + (2-win.monitorFramePeriod*0.75)): #most of one frame period left
             image.setAutoDraw(False)
         
@@ -396,6 +429,15 @@ for thisTrial in trials:
                     odpoved.corr = 1
                 else:
                     odpoved.corr = 0
+                #kamil
+                #odpoved v tehle verzi nekonci trial
+                pport.Out32(pport_addrr, 4) # sets pin no.3 to high
+                pport.Out32(pport_addrr+2, 0) # strobe off
+                print 'spravne: ' + str(odpoved.corr)
+                sumascore += odpoved.corr;
+                pokusy += 1; #pocitam jen pokusy kdy stlacil klavesu
+                sumart +=  odpoved.rt;
+                stlaceno = 1;
         
         # *test_cross* updates
         if t >= 2 and test_cross.status == NOT_STARTED:
@@ -405,6 +447,14 @@ for thisTrial in trials:
             test_cross.setAutoDraw(True)
         elif test_cross.status == STARTED and t >= (2 + (1.5-win.monitorFramePeriod*0.75)): #most of one frame period left
             test_cross.setAutoDraw(False)
+            continueRoutine = False #kamil - po tehle komponente chci ukoncit, at zmacknul klavesu nebo ne
+            if len(theseKeys) == 0 and stlaceno==0: #nestlacil klavesu
+                #pokud nestlacil klavesu, musim dat stejne strobe off - 1.10.2014
+                pport.Out32(pport_addrr, 4) # sets pin no.3 to high
+                pport.Out32(pport_addrr+2, 0) # strobe off
+                vynechanych += 1;
+                print 'ne - odpovedel'
+                
         # *ISI* period
         if t >= 0.0 and ISI.status == NOT_STARTED:
             # keep track of start time/frame for later
@@ -560,12 +610,22 @@ for thisTrial in trials:
         if podle=='vy':
             corrans_bk = 'left'
         else:
-            corrans_bk = 'right'
+            corrans_bk = 'right'  
+            
+        if pokusy > 0:
+            textScore     = '\n' + u'skóre: ' + ( "%.0f" % (sumascore/pokusy*100)) + ' % z ' + str(pokusy) + u' pokusů';
+            textScore += '\n' + u'čas reakce: ' + ( "%.0f" %  (sumart/pokusy*1000) ) + ' ms';
+            textScore += u'\nvynechaných pokusů: ' +  str(vynechanych);
+        elif vynechanych > 0:
+        	  textScore = u'vynechaných pokusů: ' + str(vynechanych);
+        text4.setText(textScore)        
+        
         key_resp_bk = event.BuilderKeyResponse()  # create an object of type KeyResponse
         key_resp_bk.status = NOT_STARTED
         # keep track of which components have finished
         blokkonecComponents = []
         blokkonecComponents.append(text_bk)
+        blokkonecComponents.append(text4)
         blokkonecComponents.append(key_resp_bk)
         for thisComponent in blokkonecComponents:
             if hasattr(thisComponent, 'status'):
@@ -579,7 +639,13 @@ for thisTrial in trials:
             frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
             # update/draw components on each frame
             
-            
+            # *text4* updates
+            if t >= 0.0 and text4.status == NOT_STARTED:
+                # keep track of start time/frame for later
+                text4.tStart = t  # underestimates by a little under one frame
+                text4.frameNStart = frameN  # exact frame index
+                text4.setAutoDraw(True)
+                
             # *text_bk* updates
             if t >= 0.0 and text_bk.status == NOT_STARTED:
                 # keep track of start time/frame for later
@@ -655,11 +721,18 @@ for thisTrial in trials:
         jistotaClock.reset()  # clock 
         frameN = -1
         # update component parameters for each repeat
+        if key_resp_bk.keys == 'left':
+            jistotavolba = u'od Vás'
+        else:
+            jistotavolba = u'od Značky'
+        
         rating_jistota.reset()
+        text_jistotavolba.setText(jistotavolba)
         # keep track of which components have finished
         jistotaComponents = []
         jistotaComponents.append(text_jistota)
         jistotaComponents.append(rating_jistota)
+        jistotaComponents.append(text_jistotavolba)
         for thisComponent in jistotaComponents:
             if hasattr(thisComponent, 'status'):
                 thisComponent.status = NOT_STARTED
@@ -686,6 +759,12 @@ for thisTrial in trials:
                     rating_jistota.response = rating_jistota.getRating()
                     rating_jistota.rt = rating_jistota.getRT()
             
+            # *text_jistotavolba* updates
+            if t >= 0.0 and text_jistotavolba.status == NOT_STARTED:
+                # keep track of start time/frame for later
+                text_jistotavolba.tStart = t  # underestimates by a little under one frame
+                text_jistotavolba.frameNStart = frameN  # exact frame index
+                text_jistotavolba.setAutoDraw(True)
             # check if all components have finished
             if not continueRoutine:  # a component has requested a forced-end of Routine
                 routineTimer.reset()  # if we abort early the non-slip timer needs reset
@@ -710,10 +789,10 @@ for thisTrial in trials:
         for thisComponent in jistotaComponents:
             if hasattr(thisComponent, "setAutoDraw"):
                 thisComponent.setAutoDraw(False)
-        # store data for thisExp (ExperimentHandler)
-        thisExp.addData('rating_jistota.response', rating_jistota.getRating())
-        thisExp.addData('rating_jistota.rt', rating_jistota.getRT())
-        thisExp.nextEntry()
+        
+        # store data for loopBlokKonec (TrialHandler)
+        loopBlokKonec.addData('rating_jistota.response', rating_jistota.getRating())
+        loopBlokKonec.addData('rating_jistota.rt', rating_jistota.getRT())
         thisExp.nextEntry()
         
     # completed blokkonec repeats of 'loopBlokKonec'
