@@ -14,6 +14,7 @@ import numpy as np  # whole numpy lib is available, prepend 'np.'
 from numpy import sin, cos, tan, log, log10, pi, average, sqrt, std, deg2rad, rad2deg, linspace, asarray
 from numpy.random import random, randint, normal, shuffle
 import os  # handy system and path functions
+import random
 
 # Store info about the experiment session
 expName = u'sublim2'  # from the Builder filename that created this script
@@ -22,9 +23,9 @@ dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 if dlg.OK == False: core.quit()  # user pressed cancel
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
 expInfo['expName'] = expName
-bilyvlevo = randint(0,1); #nahodne urcim, jestli bily ctverec bud pro sipku vlevo nebo vpravo
+random.seed()
+bilyvlevo = random.randint(0,1 ) #nahodne urcim, jestli bily ctverec bud pro sipku vlevo nebo vpravo
 expInfo['bilyvlevo']=bilyvlevo
-
 
 # Setup filename for saving
 filename = 'data/%s_%s_%s' %(expInfo['participant'], expName, expInfo['date'])
@@ -95,7 +96,7 @@ text_sipka = visual.TextStim(win=win, ori=0, name='text_sipka',
 bilyctverec = visual.ImageStim(win=win, name='bilyctverec',
     image='sin', mask=None,
     ori=0, pos=[0, 0], size=None,
-    color=[1,1,1], colorSpace=u'rgb', opacity=0.8,
+    color=[1,1,1], colorSpace=u'rgb', opacity=0.3,
     flipHoriz=False, flipVert=False,
     texRes=128, interpolate=False, depth=-7.0)
 
@@ -343,12 +344,12 @@ for thisTrial in trials:
                 continueRoutine = False
         
         # *bilyctverec* updates
-        if frameN >= 60 and bilyctverec.status == NOT_STARTED and sipkaframu<=2:
+        if frameN >= 59 and bilyctverec.status == NOT_STARTED and sipkaframu<=2:
             # keep track of start time/frame for later
             bilyctverec.tStart = t  # underestimates by a little under one frame
             bilyctverec.frameNStart = frameN  # exact frame index
             bilyctverec.setAutoDraw(True)
-        elif bilyctverec.status == STARTED and frameN >= 1:
+        elif bilyctverec.status == STARTED and frameN >= 60: #chci aby predchazel sipku - 17.7.2016
             bilyctverec.setAutoDraw(False)
         # *ISI* period
         if t >= 0.0 and ISI.status == NOT_STARTED:
