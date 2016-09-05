@@ -128,26 +128,19 @@ blokkonecClock = core.Clock()
 #inicializace promenne
 corrans_bk = ''
 text_bk = visual.TextStim(win=win, ori=0, name='text_bk',
-    text=u'Jak\xfd to byl blok?\n\u25c4   od V\xe1s\n\u25ba   od Zna\u010dky\n',    font=u'Arial',
+    text=u'Jak\xfd to byl blok?\n\u25c4\t\t\t\tod V\xe1s\n\u25ba\t\t\t\tod Zna\u010dky\nmezera\t\tnevím',    font=u'Arial',
     pos=[0, 0], height=0.1, wrapWidth=None,
     color=u'white', colorSpace=u'rgb', opacity=1,
     depth=-1.0)
 
-# Initialize components for Routine "jistota"
-jistotaClock = core.Clock()
-jistotavolba =u''
-text_jistota = visual.TextStim(win=win, ori=0, name='text_jistota',
-    text=u'Jak jste si t\xedm jist\xfd/\xe1',    font='Arial',
+# Initialize components for Routine "cekejdlouho"
+cekejdlouhoClock = core.Clock()
+text_cekejdlouho = visual.TextStim(win=win, ori=0, name='text_cekejdlouho',
+    text='default text',    font=u'Arial',
     pos=[0, 0], height=0.1, wrapWidth=None,
-    color='white', colorSpace='rgb', opacity=1,
+    color=u'white', colorSpace=u'rgb', opacity=1,
     depth=0.0)
-rating_jistota = visual.RatingScale(win=win, name='rating_jistota', marker=u'triangle', size=1.0, pos=[0.0, -0.4], low=1, high=3, labels=[u''], scale=u'1=spletl jsem se, 2=h\xe1d\xe1m, 3=jsem si jist\xfd/\xe1', markerStart=u'2')
-text_jistotavolba = visual.TextStim(win=win, ori=0, name='text_jistotavolba',
-    text='default text',    font='Arial',
-    pos=[0, 0.25], height=0.15, wrapWidth=None,
-    color='blue', colorSpace='rgb', opacity=1,
-    depth=-3.0)
-
+    
 # Create some handy timers
 globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.CountdownTimer()  # to track time remaining of each (non-slip) routine 
@@ -206,9 +199,8 @@ for thisTrial in trials:
             else:
                 textNapoveda = u'z boku, od Značky'
         
-        text.setText(textNapoveda
-)
-        text3.setText(opakovani)
+        text.setText(textNapoveda)
+        text3.setText(str(opakovani) + '-' + str(opakovani_vbloku) + ' / 4-4')
         sumascore = 0; # v kazdem bloku pocitam znova 8.6.2016  =====================================
         sumart = 0;
         pokusy = 0;
@@ -433,7 +425,7 @@ for thisTrial in trials:
                 #odpoved v tehle verzi nekonci trial
                 pport.Out32(pport_addrr, 4) # sets pin no.3 to high
                 pport.Out32(pport_addrr+2, 0) # strobe off
-                print 'spravne: ' + str(odpoved.corr)
+                #print 'spravne: ' + str(odpoved.corr)
                 sumascore += odpoved.corr;
                 pokusy += 1; #pocitam jen pokusy kdy stlacil klavesu
                 sumart +=  odpoved.rt;
@@ -613,7 +605,7 @@ for thisTrial in trials:
             corrans_bk = 'right'  
             
         if pokusy > 0:
-            textScore     = '\n' + u'skóre: ' + ( "%.0f" % (sumascore/pokusy*100)) + ' % z ' + str(pokusy) + u' pokusů';
+            textScore     = '\n' + u'skóre: ' + str(sumascore) + u' správně ' + ("(%.0f" % (sumascore/pokusy*100)) + ' %) z ' + str(pokusy) + u' pokusů';
             textScore += '\n' + u'čas reakce: ' + ( "%.0f" %  (sumart/pokusy*1000) ) + ' ms';
             textScore += u'\nvynechaných pokusů: ' +  str(vynechanych);
         elif vynechanych > 0:
@@ -663,7 +655,7 @@ for thisTrial in trials:
                 key_resp_bk.clock.reset()  # now t=0
                 event.clearEvents(eventType='keyboard')
             if key_resp_bk.status == STARTED:
-                theseKeys = event.getKeys(keyList=['left', 'right'])
+                theseKeys = event.getKeys(keyList=['left', 'right','space'])
                 
                 # check for quit:
                 if "escape" in theseKeys:
@@ -716,87 +708,93 @@ for thisTrial in trials:
         if key_resp_bk.keys != None:  # we had a response
             loopBlokKonec.addData('key_resp_bk.rt', key_resp_bk.rt)
         
-        #------Prepare to start Routine "jistota"-------
-        t = 0
-        jistotaClock.reset()  # clock 
-        frameN = -1
-        # update component parameters for each repeat
-        if key_resp_bk.keys == 'left':
-            jistotavolba = u'od Vás'
-        else:
-            jistotavolba = u'od Značky'
         
-        rating_jistota.reset()
-        text_jistotavolba.setText(jistotavolba)
-        # keep track of which components have finished
-        jistotaComponents = []
-        jistotaComponents.append(text_jistota)
-        jistotaComponents.append(rating_jistota)
-        jistotaComponents.append(text_jistotavolba)
-        for thisComponent in jistotaComponents:
-            if hasattr(thisComponent, 'status'):
-                thisComponent.status = NOT_STARTED
-        
-        #-------Start Routine "jistota"-------
-        continueRoutine = True
-        while continueRoutine:
-            # get current time
-            t = jistotaClock.getTime()
-            frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
-            # update/draw components on each frame
-            
-            # *text_jistota* updates
-            if t >= 0.0 and text_jistota.status == NOT_STARTED:
-                # keep track of start time/frame for later
-                text_jistota.tStart = t  # underestimates by a little under one frame
-                text_jistota.frameNStart = frameN  # exact frame index
-                text_jistota.setAutoDraw(True)
-            # *rating_jistota* updates
-            if t > 0.0:
-                rating_jistota.draw()
-                continueRoutine = rating_jistota.noResponse
-                if rating_jistota.noResponse == False:
-                    rating_jistota.response = rating_jistota.getRating()
-                    rating_jistota.rt = rating_jistota.getRT()
-            
-            # *text_jistotavolba* updates
-            if t >= 0.0 and text_jistotavolba.status == NOT_STARTED:
-                # keep track of start time/frame for later
-                text_jistotavolba.tStart = t  # underestimates by a little under one frame
-                text_jistotavolba.frameNStart = frameN  # exact frame index
-                text_jistotavolba.setAutoDraw(True)
-            # check if all components have finished
-            if not continueRoutine:  # a component has requested a forced-end of Routine
-                routineTimer.reset()  # if we abort early the non-slip timer needs reset
-                break
-            continueRoutine = False  # will revert to True if at least one component still running
-            for thisComponent in jistotaComponents:
-                if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
-                    continueRoutine = True
-                    break  # at least one component has not yet finished
-            
-            # check for quit (the Esc key)
-            if endExpNow or event.getKeys(keyList=["escape"]):
-                core.quit()
-            
-            # refresh the screen
-            if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
-                win.flip()
-            else:  # this Routine was not non-slip safe so reset non-slip timer
-                routineTimer.reset()
-        
-        #-------Ending Routine "jistota"-------
-        for thisComponent in jistotaComponents:
-            if hasattr(thisComponent, "setAutoDraw"):
-                thisComponent.setAutoDraw(False)
-        
-        # store data for loopBlokKonec (TrialHandler)
-        loopBlokKonec.addData('rating_jistota.response', rating_jistota.getRating())
-        loopBlokKonec.addData('rating_jistota.rt', rating_jistota.getRT())
-        thisExp.nextEntry()
         
     # completed blokkonec repeats of 'loopBlokKonec'
     
+    thisExp.nextEntry()
+    
+    if blokkonec > 0 and opakovani_vbloku ==4 and  opakovani == 2   :
+        zbyvarepetic = 120
+        # set up handler to look after randomisation of conditions etc
+        loopCekejDlouho = data.TrialHandler(nReps=zbyvarepetic, method=u'sequential', 
+            extraInfo=expInfo, originPath=None,
+            trialList=[None],
+            seed=None, name='loopCekejDlouho')
+        thisExp.addLoop(loopCekejDlouho)  # add the loop to the experiment
+        thisLoopCekejDlouho = loopCekejDlouho.trialList[0]  # so we can initialise stimuli with some values
+        # abbreviate parameter names if possible (e.g. rgb=thisLoopCekejDlouho.rgb)
+        if thisLoopCekejDlouho != None:
+            for paramName in thisLoopCekejDlouho.keys():
+                exec(paramName + '= thisLoopCekejDlouho.' + paramName)
+        
+        for thisLoopCekejDlouho in loopCekejDlouho:
+            currentLoop = loopCekejDlouho
+            # abbreviate parameter names if possible (e.g. rgb = thisLoopCekejDlouho.rgb)
+            if thisLoopCekejDlouho != None:
+                for paramName in thisLoopCekejDlouho.keys():
+                    exec(paramName + '= thisLoopCekejDlouho.' + paramName)
+            
+            #------Prepare to start Routine "cekejdlouho"-------
+            t = 0
+            cekejdlouhoClock.reset()  # clock 
+            frameN = -1
+            routineTimer.add(1.000000)
+            # update component parameters for each repeat
+            text_cekejdlouho.setText(u'Pauza je\u0161t\u011b ' + str(zbyvarepetic) + ' s')
+            # keep track of which components have finished
+            cekejdlouhoComponents = []
+            cekejdlouhoComponents.append(text_cekejdlouho)
+            for thisComponent in cekejdlouhoComponents:
+                if hasattr(thisComponent, 'status'):
+                    thisComponent.status = NOT_STARTED
+            
+            #-------Start Routine "cekejdlouho"-------
+            continueRoutine = True
+            while continueRoutine and routineTimer.getTime() > 0:
+                # get current time
+                t = cekejdlouhoClock.getTime()
+                frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
+                # update/draw components on each frame
+                
+                # *text_cekejdlouho* updates
+                if t >= 0.0 and text_cekejdlouho.status == NOT_STARTED:
+                    # keep track of start time/frame for later
+                    text_cekejdlouho.tStart = t  # underestimates by a little under one frame
+                    text_cekejdlouho.frameNStart = frameN  # exact frame index
+                    text_cekejdlouho.setAutoDraw(True)
+                elif text_cekejdlouho.status == STARTED and t >= (0.0 + (1.0-win.monitorFramePeriod*0.75)): #most of one frame period left
+                    text_cekejdlouho.setAutoDraw(False)
+                
+                # check if all components have finished
+                if not continueRoutine:  # a component has requested a forced-end of Routine
+                    routineTimer.reset()  # if we abort early the non-slip timer needs reset
+                    break
+                continueRoutine = False  # will revert to True if at least one component still running
+                for thisComponent in cekejdlouhoComponents:
+                    if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
+                        continueRoutine = True
+                        break  # at least one component has not yet finished
+                
+                # check for quit (the Esc key)
+                if endExpNow or event.getKeys(keyList=["escape"]):
+                    core.quit()
+                
+                # refresh the screen
+                if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
+                    win.flip()
+            
+            #-------Ending Routine "cekejdlouho"-------
+            for thisComponent in cekejdlouhoComponents:
+                if hasattr(thisComponent, "setAutoDraw"):
+                    thisComponent.setAutoDraw(False)
+            thisExp.nextEntry()
+            
+            zbyvarepetic = zbyvarepetic - 1
+        #konec smycky 60x
+            
+    #konec if cekej dlouho    
+    # completed 60 repeats of 'loopCekejDlouho'
     thisExp.nextEntry()
     
 # completed 1 repeats of 'trials'

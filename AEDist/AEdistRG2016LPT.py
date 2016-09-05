@@ -137,6 +137,14 @@ text_bk = visual.TextStim(win=win, ori=0, name='text_bk',
     depth=-1.0)
 
 
+# Initialize components for Routine "cekejdlouho"
+cekejdlouhoClock = core.Clock()
+text_cekejdlouho = visual.TextStim(win=win, ori=0, name='text_cekejdlouho',
+    text='default text',    font=u'Arial',
+    pos=[0, 0], height=0.1, wrapWidth=None,
+    color=u'white', colorSpace=u'rgb', opacity=1,
+    depth=0.0)
+    
 # Create some handy timers
 globalClock = core.Clock()  # to track the time since experiment started
 routineTimer = core.CountdownTimer()  # to track time remaining of each (non-slip) routine 
@@ -601,7 +609,7 @@ for thisTrial in trials:
         else:
             corrans_bk = 'up'
         if pokusy > 0:
-            textScore     = '\n' + u'skóre: ' + ( "%.0f" % (sumascore/pokusy*100)) + ' % z ' + str(pokusy) + u' pokusů';
+            textScore     = '\n' + u'skóre: ' + str(sumascore) +  u' správně ' + ( "(%.0f" % (sumascore/pokusy*100)) + ' %) z ' + str(pokusy) + u' pokusů';
             textScore += '\n' + u'čas reakce: ' + ( "%.0f" %  (sumart/pokusy*1000) ) + ' ms';
             textScore += u'\nvynechaných pokusů: ' +  str(vynechanych);
         elif vynechanych > 0:
@@ -711,6 +719,89 @@ for thisTrial in trials:
         
     # completed blokkonec repeats of 'loopBlokKonec'
     
+    thisExp.nextEntry()
+    
+    if blokkonec > 0 and opakovani_vbloku ==3  and  opakovani == 4   :
+        zbyvarepetic = 120
+        # set up handler to look after randomisation of conditions etc
+        loopCekejDlouho = data.TrialHandler(nReps=zbyvarepetic, method=u'sequential', 
+            extraInfo=expInfo, originPath=None,
+            trialList=[None],
+            seed=None, name='loopCekejDlouho')
+        thisExp.addLoop(loopCekejDlouho)  # add the loop to the experiment
+        thisLoopCekejDlouho = loopCekejDlouho.trialList[0]  # so we can initialise stimuli with some values
+        # abbreviate parameter names if possible (e.g. rgb=thisLoopCekejDlouho.rgb)
+        if thisLoopCekejDlouho != None:
+            for paramName in thisLoopCekejDlouho.keys():
+                exec(paramName + '= thisLoopCekejDlouho.' + paramName)
+        
+        for thisLoopCekejDlouho in loopCekejDlouho:
+            currentLoop = loopCekejDlouho
+            # abbreviate parameter names if possible (e.g. rgb = thisLoopCekejDlouho.rgb)
+            if thisLoopCekejDlouho != None:
+                for paramName in thisLoopCekejDlouho.keys():
+                    exec(paramName + '= thisLoopCekejDlouho.' + paramName)
+            
+            #------Prepare to start Routine "cekejdlouho"-------
+            t = 0
+            cekejdlouhoClock.reset()  # clock 
+            frameN = -1
+            routineTimer.add(1.000000)
+            # update component parameters for each repeat
+            text_cekejdlouho.setText(u'Pauza je\u0161t\u011b ' + str(zbyvarepetic) + ' s')
+            # keep track of which components have finished
+            cekejdlouhoComponents = []
+            cekejdlouhoComponents.append(text_cekejdlouho)
+            for thisComponent in cekejdlouhoComponents:
+                if hasattr(thisComponent, 'status'):
+                    thisComponent.status = NOT_STARTED
+            
+            #-------Start Routine "cekejdlouho"-------
+            continueRoutine = True
+            while continueRoutine and routineTimer.getTime() > 0:
+                # get current time
+                t = cekejdlouhoClock.getTime()
+                frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
+                # update/draw components on each frame
+                
+                # *text_cekejdlouho* updates
+                if t >= 0.0 and text_cekejdlouho.status == NOT_STARTED:
+                    # keep track of start time/frame for later
+                    text_cekejdlouho.tStart = t  # underestimates by a little under one frame
+                    text_cekejdlouho.frameNStart = frameN  # exact frame index
+                    text_cekejdlouho.setAutoDraw(True)
+                elif text_cekejdlouho.status == STARTED and t >= (0.0 + (1.0-win.monitorFramePeriod*0.75)): #most of one frame period left
+                    text_cekejdlouho.setAutoDraw(False)
+                
+                # check if all components have finished
+                if not continueRoutine:  # a component has requested a forced-end of Routine
+                    routineTimer.reset()  # if we abort early the non-slip timer needs reset
+                    break
+                continueRoutine = False  # will revert to True if at least one component still running
+                for thisComponent in cekejdlouhoComponents:
+                    if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
+                        continueRoutine = True
+                        break  # at least one component has not yet finished
+                
+                # check for quit (the Esc key)
+                if endExpNow or event.getKeys(keyList=["escape"]):
+                    core.quit()
+                
+                # refresh the screen
+                if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
+                    win.flip()
+            
+            #-------Ending Routine "cekejdlouho"-------
+            for thisComponent in cekejdlouhoComponents:
+                if hasattr(thisComponent, "setAutoDraw"):
+                    thisComponent.setAutoDraw(False)
+            thisExp.nextEntry()
+            
+            zbyvarepetic = zbyvarepetic - 1
+        #konec smycky 60x
+            
+    #konec if cekej dlouho    
+    # completed 60 repeats of 'loopCekejDlouho'
     thisExp.nextEntry()
     
 # completed 1 repeats of 'trials'
