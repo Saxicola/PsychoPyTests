@@ -131,19 +131,11 @@ blokkonecClock = core.Clock()
 #inicializace promenne
 corrans_bk = ''
 text_bk = visual.TextStim(win=win, ori=0, name='text_bk',
-    text=u'O jaký se jednalo blok?\n\u25c4   blíž k Vám\n\u25ba   blíž ke značce\n\u25b2   červená',    font=u'Arial',
+    text=u'O jaký se jednalo blok?\n\u25c4\t\t\t\tblíž k Vám\n\u25ba\t\t\t\tblíž ke značce\n\u25b2\t\t\t\tčervená\nmezera\t\tnevím',    font=u'Arial',
     pos=[0, 0], height=0.1, wrapWidth=None,
     color=u'white', colorSpace=u'rgb', opacity=1,
     depth=-1.0)
 
-# Initialize components for Routine "jistota"
-jistotaClock = core.Clock()
-text_jistota = visual.TextStim(win=win, ori=0, name='text_jistota',
-    text=u'Jak jste si tím jistý/á?',    font=u'Arial',
-    pos=[0, 0], height=0.1, wrapWidth=None,
-    color=u'white', colorSpace=u'rgb', opacity=1,
-    depth=0.0)
-rating_jistota = visual.RatingScale(win=win, name='rating_jistota', marker=u'triangle', size=1.0, pos=[0.0, -0.4], low=1, high=3, labels=[u''], scale=u'1=h\xe1d\xe1m, 3=jsem si jist\xfd/\xe1', markerStart=u'2')
 
 # Create some handy timers
 globalClock = core.Clock()  # to track the time since experiment started
@@ -660,7 +652,7 @@ for thisTrial in trials:
                 key_resp_bk.clock.reset()  # now t=0
                 event.clearEvents(eventType='keyboard')
             if key_resp_bk.status == STARTED:
-                theseKeys = event.getKeys(keyList=['left', 'right', 'up'])
+                theseKeys = event.getKeys(keyList=['left', 'right', 'up','space'])
                 
                 # check for quit:
                 if "escape" in theseKeys:
@@ -713,70 +705,9 @@ for thisTrial in trials:
         if key_resp_bk.keys != None:  # we had a response
             loopBlokKonec.addData('key_resp_bk.rt', key_resp_bk.rt)
         
-        #------Prepare to start Routine "jistota"-------     ******************************************************
-        t = 0
-        jistotaClock.reset()  # clock 
-        frameN = -1
-        # update component parameters for each repeat
-        rating_jistota.reset()
-        # keep track of which components have finished
-        jistotaComponents = []
-        jistotaComponents.append(text_jistota)
-        jistotaComponents.append(rating_jistota)
-        for thisComponent in jistotaComponents:
-            if hasattr(thisComponent, 'status'):
-                thisComponent.status = NOT_STARTED
         
-        #-------Start Routine "jistota"-------       ******************************************************
-        continueRoutine = True
-        while continueRoutine:
-            # get current time
-            t = jistotaClock.getTime()
-            frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
-            # update/draw components on each frame
-            
-            # *text_jistota* updates
-            if t >= 0.0 and text_jistota.status == NOT_STARTED:
-                # keep track of start time/frame for later
-                text_jistota.tStart = t  # underestimates by a little under one frame
-                text_jistota.frameNStart = frameN  # exact frame index
-                text_jistota.setAutoDraw(True)
-            # *rating_jistota* updates
-            if t > 0.0:
-                rating_jistota.draw()
-                continueRoutine = rating_jistota.noResponse
-                if rating_jistota.noResponse == False:
-                    rating_jistota.response = rating_jistota.getRating()
-                    rating_jistota.rt = rating_jistota.getRT()
-            
-            # check if all components have finished
-            if not continueRoutine:  # a component has requested a forced-end of Routine
-                routineTimer.reset()  # if we abort early the non-slip timer needs reset
-                break
-            continueRoutine = False  # will revert to True if at least one component still running
-            for thisComponent in jistotaComponents:
-                if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
-                    continueRoutine = True
-                    break  # at least one component has not yet finished
-            
-            # check for quit (the Esc key)
-            if endExpNow or event.getKeys(keyList=["escape"]):
-                core.quit()
-            
-            # refresh the screen
-            if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
-                win.flip()
-            else:  # this Routine was not non-slip safe so reset non-slip timer
-                routineTimer.reset()
-        
-        #-------Ending Routine "jistota"-------
-        for thisComponent in jistotaComponents:
-            if hasattr(thisComponent, "setAutoDraw"):
-                thisComponent.setAutoDraw(False)
-        # store data for loopBlokKonec (TrialHandler)
-        loopBlokKonec.addData('rating_jistota.response', rating_jistota.getRating())
-        loopBlokKonec.addData('rating_jistota.rt', rating_jistota.getRT())
-        thisExp.nextEntry()
+        # store data for loopBlokKonec (TrialHandler)        
+        #thisExp.nextEntry()
         
     # completed blokkonec repeats of 'loopBlokKonec'
     
