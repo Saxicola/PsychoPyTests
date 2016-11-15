@@ -14,6 +14,7 @@ import numpy as np  # whole numpy lib is available, prepend 'np.'
 from numpy import sin, cos, tan, log, log10, pi, average, sqrt, std, deg2rad, rad2deg, linspace, asarray
 from numpy.random import random, randint, normal, shuffle
 import os  # handy system and path functions
+from Arduino import * #lukas
 
 #verze z 2.10.2014
 # aby mi fungovalo strobe off i bez odpovedi, musel jsem vrati ISI 0.1 s po krizku
@@ -22,6 +23,13 @@ pport = windll.inpout32
 pport_addrr = 0x2FF8 #0x0378 - pocitac #0x2FF8 - notebook
 pport.Out32(pport_addrr, 4) # sets pin no.3 to high
 pport.Out32(pport_addrr+2, 0) # strobe off  
+
+arduino = Arduino()
+try:
+    arduino.connect()
+except Exception as ex:
+    print ('vyjimka')
+#arduino.blink()
 
 blokcislo = 0;
 ovocebylo = 0;
