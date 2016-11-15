@@ -114,7 +114,7 @@ routineTimer = core.CountdownTimer()  # to track time remaining of each (non-sli
 # set up handler to look after randomisation of conditions etc
 trials = data.TrialHandler(nReps=1, method='sequential', 
     extraInfo=expInfo, originPath=None,
-    trialList=data.importConditions('PPAconditionsEEG2016-10.csv'),
+    trialList=data.importConditions('PPAconditionsEEG2016-10-24.csv'),
     seed=None, name='trials')
 thisExp.addLoop(trials)  # add the loop to the experiment
 thisTrial = trials.trialList[0]  # so we can initialise stimuli with some values
