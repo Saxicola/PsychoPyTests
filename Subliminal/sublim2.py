@@ -45,7 +45,7 @@ endExpNow = False  # flag for 'escape' or other condition => quit the exp
 # Start Code - component code to be run before the window creation
 
 # Setup the Window
-win = visual.Window(size=(1600, 900), fullscr=True, screen=0, allowGUI=False, allowStencil=False,
+win = visual.Window(size=(1600, 900), fullscr=True, screen=1,allowGUI=False, allowStencil=False,
     monitor='testMonitor', color=[0,0,0], colorSpace='rgb',
     blendMode='avg', useFBO=True,
     )
@@ -96,7 +96,7 @@ text_sipka = visual.TextStim(win=win, ori=0, name='text_sipka',
 bilyctverec = visual.ImageStim(win=win, name='bilyctverec',
     image='sin', mask=None,
     ori=0, pos=[0, 0], size=None,
-    color=[1,1,1], colorSpace=u'rgb', opacity=0.3,
+    color=[1,1,1], colorSpace=u'rgb', opacity=0.5,
     flipHoriz=False, flipVert=False,
     texRes=128, interpolate=False, depth=-7.0)
 
@@ -107,7 +107,7 @@ routineTimer = core.CountdownTimer()  # to track time remaining of each (non-sli
 # set up handler to look after randomisation of conditions etc
 trials = data.TrialHandler(nReps=1, method=u'sequential', 
     extraInfo=expInfo, originPath=None,
-    trialList=data.importConditions(u'sublim2.csv'),
+    trialList=data.importConditions(u'sublim120.csv'),
     seed=1, name='trials')
 thisExp.addLoop(trials)  # add the loop to the experiment
 thisTrial = trials.trialList[0]  # so we can initialise stimuli with some values
@@ -344,7 +344,7 @@ for thisTrial in trials:
                 continueRoutine = False
         
         # *bilyctverec* updates
-        if frameN >= 59 and bilyctverec.status == NOT_STARTED and sipkaframu<=2:
+        if frameN >= 59 and bilyctverec.status == NOT_STARTED and sipkaframu<=4:
             # keep track of start time/frame for later
             bilyctverec.tStart = t  # underestimates by a little under one frame
             bilyctverec.frameNStart = frameN  # exact frame index
