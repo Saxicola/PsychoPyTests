@@ -3,15 +3,13 @@
 Created on Mon Feb  8 19:26:38 2016
 @author: Smoothie
 """
-#import threading
+import threading
 import serial
-#import serial.threaded
 import sys
 import glob
 
-
 class Arduino:
-    def __init__(self, port="COM5", baudrate=9600, timeout=0.05, want_threading=False):
+    def __init__(self, port="COM5", baudrate = 9600, timeout = 0.05, want_threading=False):
         self.arduinoConnection = serial.Serial()
         self.arduinoConnection.port = port
         self.arduinoConnection.timeout = timeout
@@ -115,11 +113,12 @@ class Arduino:
     '''
 
     def _try_connect(self, port):
+        print "connecting" + port
         connection = serial.Serial()
         connection.port = port
         connection.rts = True
         connection.dtr = True
-        connection.timeout = self.arduinoConnection.timeout
+        connection.timeout = 0.05
         try:
             connection.open()
         except Exception as ex:
@@ -137,7 +136,9 @@ class Arduino:
     '''
 
     def _test_connection(self, connection):
-        self._serial_send_message(connection, 'WHO')
+        print "testing"
+        self._serial_send_message(connection, "WHO")
+        print "message sent"
         line = self.readline(connection)
         if "ARDUINO" in line:
             return True
@@ -177,7 +178,7 @@ class Arduino:
 
     @staticmethod
     def _serial_send_message(connection, message):
-        byte_message = (message + "!").encode("utf-8")
+        byte_message = (message + "!").encode()
         connection.write(byte_message)
 
 
@@ -202,7 +203,8 @@ def serial_ports(up_to = 256):
     result = []
     for port in ports:
         try:
-            s = serial.Serial(port)
+            s = serial.Serial(port, timeout = 0.05)
+            print port
             s.close()
             result.append(port)
         except (OSError, serial.SerialException):

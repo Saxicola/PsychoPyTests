@@ -7,29 +7,24 @@ If you publish work using this script please cite the relevant PsychoPy publicat
   Peirce, JW (2009) Generating stimuli for neuroscience using PsychoPy. Frontiers in Neuroinformatics, 2:10. doi: 10.3389/neuro.11.010.2008
 """
 
-from __future__ import division  # so that 1/3=0.333 instead of 1/3=0
+from __future__ import division  # so that 1/3=0.333+ instead of 1/3=0
 from psychopy import visual, core, data, event, logging, sound, gui
 from psychopy.constants import *  # things like STARTED, FINISHED
 import numpy as np  # whole numpy lib is available, prepend 'np.'
 from numpy import sin, cos, tan, log, log10, pi, average, sqrt, std, deg2rad, rad2deg, linspace, asarray
 from numpy.random import random, randint, normal, shuffle
 import os  # handy system and path functions
+import serial
 from Arduino import * #lukas
 
 #verze z 2.10.2014
-# aby mi fungovalo strobe off i bez odpovedi, musel jsem vrati ISI 0.1 s po krizku
-from ctypes import windll #kamil
-pport = windll.inpout32
-pport_addrr = 0x2FF8 #0x0378 - pocitac #0x2FF8 - notebook
-pport.Out32(pport_addrr, 4) # sets pin no.3 to high
-pport.Out32(pport_addrr+2, 0) # strobe off  
 
 arduino = Arduino()
-try:
-    arduino.connect()
-except Exception as ex:
-    print ('vyjimka')
-#arduino.blink()
+print "im here"
+arduino.connect()
+print "i got here"
+print arduino.is_open()
+arduino.blink()
 
 blokcislo = 0;
 ovocebylo = 0;
