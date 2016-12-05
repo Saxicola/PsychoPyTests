@@ -14,16 +14,16 @@ import numpy as np  # whole numpy lib is available, prepend 'np.'
 from numpy import sin, cos, tan, log, log10, pi, average, sqrt, std, deg2rad, rad2deg, linspace, asarray
 from numpy.random import random, randint, normal, shuffle
 import os  # handy system and path functions
-import serial
 from Arduino import * #lukas
 
 #verze z 2.10.2014
 # aby mi fungovalo strobe off i bez odpovedi, musel jsem vrati ISI 0.1 s po krizku
 
-arduino = Arduino()
-arduino.connect()
-print arduino.is_open()
-arduino.blink()
+from ctypes import windll #kamil
+pport = windll.inpout32
+pport_addrr = 0x2FF8 #0x0378 - pocitac #0x2FF8 - notebook
+pport.Out32(pport_addrr, 4) # sets pin no.3 to high
+pport.Out32(pport_addrr+2, 0) # strobe off  
 
 blokcislo = 0;
 ovocebylo = 0;
@@ -269,9 +269,8 @@ for thisTrial in trials:
             image.frameNStart = frameN  # exact frame index
             image.setAutoDraw(True)
             #kamil
-            #pport.Out32(pport_addrr, 255) # sets all pins to low
-            #pport.Out32(pport_addrr+2, 1) # strobe on
-            arduino.send_pulse_up()
+            pport.Out32(pport_addrr, 255) # sets all pins to low
+            pport.Out32(pport_addrr+2, 1) # strobe on
             
         elif image.status == STARTED and frameN >= (image.frameNStart + 12): #predelano na frames - 7.6.2016
             image.setAutoDraw(False)
@@ -308,9 +307,8 @@ for thisTrial in trials:
                 #continueRoutine = False
                 #kamil
                 #odpoved v tehle verzi nekonci trial
-                #pport.Out32(pport_addrr, 4) # sets pin no.3 to high
-                #pport.Out32(pport_addrr+2, 0) # strobe off
-                arduino.send_pulse_down()
+                pport.Out32(pport_addrr, 4) # sets pin no.3 to high
+                pport.Out32(pport_addrr+2, 0) # strobe off
         
         # *krizek* updates
         if frameN >= 12 and krizek.status == NOT_STARTED:
@@ -391,10 +389,8 @@ for thisTrial in trials:
             ISI.start(3*frameDur)
             #if len(theseKeys) == 0: #nestlacil klavesu
             #pokud nestlacil klavesu, musim dat stejne strobe off  - 1.10.2014
-            #pport.Out32(pport_addrr, 4) # sets pin no.3 to high
-            #pport.Out32(pport_addrr+2, 0) # strobe off
-            arduino.send_pulse_down()
-            
+            pport.Out32(pport_addrr, 4) # sets pin no.3 to high
+            pport.Out32(pport_addrr+2, 0) # strobe off
         elif ISI.status == STARTED: #one frame should pass before updating params and completing
             ISI.complete() #finish the static period
         

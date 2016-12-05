@@ -113,7 +113,7 @@ class Arduino:
     '''
 
     def _try_connect(self, port):
-        print "connecting" + port
+        #print "connecting" + port
         connection = serial.Serial()
         connection.port = port
         connection.rts = True
@@ -136,9 +136,9 @@ class Arduino:
     '''
 
     def _test_connection(self, connection):
-        print "testing"
+        #print "testing"
         self._serial_send_message(connection, "WHO")
-        print "message sent"
+        #print "message sent"
         line = self.readline(connection)
         if "ARDUINO" in line:
             return True
