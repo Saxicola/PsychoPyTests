@@ -14,12 +14,15 @@ import numpy as np  # whole numpy lib is available, prepend 'np.'
 from numpy import sin, cos, tan, log, log10, pi, average, sqrt, std, deg2rad, rad2deg, linspace, asarray
 from numpy.random import random, randint, normal, shuffle
 import os  # handy system and path functions
+import serial
+from Arduino import * #lukas
     
-from ctypes import windll #kamil
-pport = windll.inpout32
-pport_addrr = 0x2FF8 #0x0378 - pocitac #0x2FF8 - notebook
-pport.Out32(pport_addrr, 4) # sets pin no.3 to high
-pport.Out32(pport_addrr+2, 0) # strobe off 
+arduino = Arduino()
+try:
+    arduino.connect()
+except Exception as ex:
+    print ('vyjimka pri arduino.connect')
+#arduino.blink() 
  
 sumascore = 0; #soucet score pro vypocet prumeru #kamil 8.6.2016
 sumart = 0;    #soucet reakcnich casu pro vypocet prumeru
@@ -392,8 +395,9 @@ for thisTrial in trials:
             image.frameNStart = frameN  # exact frame index
             image.setAutoDraw(True)
             #kamil
-            pport.Out32(pport_addrr, 255) # sets all pins to low
-            pport.Out32(pport_addrr+2, 1) # strobe on
+            #pport.Out32(pport_addrr, 255) # sets all pins to low
+            #pport.Out32(pport_addrr+2, 1) # strobe on
+            arduino.send_pulse_up()
              
         elif image.status == STARTED and t >= (0 + (2-win.monitorFramePeriod*0.75)): #most of one frame period left
             image.setAutoDraw(False)
@@ -423,8 +427,9 @@ for thisTrial in trials:
                     odpoved.corr = 0
                 #kamil
                 #odpoved v tehle verzi nekonci trial
-                pport.Out32(pport_addrr, 4) # sets pin no.3 to high
-                pport.Out32(pport_addrr+2, 0) # strobe off
+                #pport.Out32(pport_addrr, 4) # sets pin no.3 to high
+                #pport.Out32(pport_addrr+2, 0) # strobe off
+                arduino.send_pulse_down()
                 #print 'spravne: ' + str(odpoved.corr)
                 sumascore += odpoved.corr;
                 pokusy += 1; #pocitam jen pokusy kdy stlacil klavesu
@@ -442,8 +447,9 @@ for thisTrial in trials:
             continueRoutine = False #kamil - po tehle komponente chci ukoncit, at zmacknul klavesu nebo ne
             if len(theseKeys) == 0 and stlaceno==0: #nestlacil klavesu
                 #pokud nestlacil klavesu, musim dat stejne strobe off - 1.10.2014
-                pport.Out32(pport_addrr, 4) # sets pin no.3 to high
-                pport.Out32(pport_addrr+2, 0) # strobe off
+                #pport.Out32(pport_addrr, 4) # sets pin no.3 to high
+                #pport.Out32(pport_addrr+2, 0) # strobe off
+                arduino.send_pulse_down()
                 vynechanych += 1;
                 print 'ne - odpovedel'
                 
