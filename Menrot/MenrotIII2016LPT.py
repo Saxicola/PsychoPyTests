@@ -40,7 +40,7 @@ expInfo['date'] = data.getDateStr()  # add a simple timestamp
 expInfo['expName'] = expName
 
 # Setup filename for saving
-filename = u'data' + os.path.sep + '%s_%s' %(expInfo['participant'], expInfo['date'])
+filename = u'data' + os.path.sep + '%s_%s_%s' %(expInfo['participant'], expInfo['expName'], expInfo['date'])
 
 # An ExperimentHandler isn't essential but helps with data saving
 thisExp = data.ExperimentHandler(name=expName, version='',
