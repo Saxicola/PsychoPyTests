@@ -29,6 +29,8 @@ blokcislo = 0;
 ovocebylo = 0;
 ovocenalezeno = 0;
 reakcecas = 0;
+chciklavesu_default = 1; #jestli budu vyzadovat klavesy
+chciklavesu = chciklavesu_default;
 
 # Store info about the experiment session
 expName = 'PPAlocalizerEEG_LPT2016-10'  # from the Builder filename that created this script
@@ -81,7 +83,13 @@ text4 = visual.TextStim(win=win, ori=0, name='text4',
     pos=[0, -0.75], height=0.07, wrapWidth=None,
     color='blue', colorSpace='rgb', opacity=1,
     depth=-3.0)
-    
+#text stlaceni klavesy -   17.3.2017  ====================================    
+text5 = visual.TextStim(win=win, ori=0, name='text2',
+    text=u'Zm\xe1\u010dkn\u011bte \u0161ipku doprava pro pokra\u010dov\xe1n\xed',    font='Arial',
+    pos=[0, -0.9], height=0.05, wrapWidth=None,
+    color='white', colorSpace='rgb', opacity=1,
+    depth=-2.0)
+        
 # Initialize components for Routine "trial"
 trialClock = core.Clock()
 image = visual.ImageStim(win=win, name='image',
@@ -156,6 +164,7 @@ for thisTrial in trials:
         t = 0
         pauzaClock.reset()  # clock 
         frameN = -1
+        frameNklavesa = 0
         
         blokcislo += 1
         
@@ -173,36 +182,80 @@ for thisTrial in trials:
         text4.setText(textScore)
         reakcecas = 0; #hodnotu vynuluju pred dalsim blokem
         pauzaComponents.append(text4)
+        #kamil 17.3.2017 - kopiruju stlaceni klavesy z Aedist
+        respNapoveda = event.BuilderKeyResponse()  # create an object of type KeyResponse
+        respNapoveda.status = NOT_STARTED
+        pauzaComponents.append(respNapoveda)
+        if chciklavesu:
+            pauzaComponents.append(text5)
         for thisComponent in pauzaComponents:
             if hasattr(thisComponent, 'status'):
                 thisComponent.status = NOT_STARTED
         
         #-------Start Routine "pauza"-------
-        continueRoutine = True
+        continueRoutine = True        
         while continueRoutine  > 0:
             # get current time
             t = pauzaClock.getTime()
             frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
             # update/draw components on each frame
-            
-            # *krizek_pauza* updates
-            if frameN >= 120 and krizek_pauza.status == NOT_STARTED:
-                # keep track of start time/frame for later
-                krizek_pauza.tStart = t  # underestimates by a little under one frame
-                krizek_pauza.frameNStart = frameN  # exact frame index
-                krizek_pauza.setAutoDraw(True)
-            elif krizek_pauza.status == STARTED and frameN >= (krizek_pauza.frameNStart + 60): #predelano na frames 60Hz 7.6.2016
-                krizek_pauza.setAutoDraw(False)
-          
-            # *text4* updates
+                                
+            # *text4* updates  - cislo bloku a vysledky predchoziho bloku
             if t >= 0.0 and text4.status == NOT_STARTED:
                 # keep track of start time/frame for later
                 text4.tStart = t  # underestimates by a little under one frame
                 text4.frameNStart = frameN  # exact frame index
                 text4.setAutoDraw(True)
-            elif text4.status == STARTED and t >= (0.0 + (2.0-win.monitorFramePeriod*0.75)): #most of one frame period left
+            elif text4.status == STARTED and t >= (0.0 + (2.0-win.monitorFramePeriod*0.75)) and respNapoveda.status == FINISHED: #most of one frame period left
                 text4.setAutoDraw(False)
+            
+            # *text5* updates  - stisknete sipku doprava
+            if t >= 0.0 and chciklavesu and text5.status == NOT_STARTED :
+                # keep track of start time/frame for later
+                text5.tStart = t  # underestimates by a little under one frame
+                text5.frameNStart = frameN  # exact frame index                
+                text5.setAutoDraw(True)
+            elif text5.status == STARTED and t >= (0.0 + (2.0-win.monitorFramePeriod*0.75)) and respNapoveda.status == FINISHED: #most of one frame period left
+                text5.setAutoDraw(False) 
                 
+             # *respNapoveda* updates
+            if t >= 0.0 and respNapoveda.status == NOT_STARTED:
+                # keep track of start time/frame for later
+                respNapoveda.tStart = t  # underestimates by a little under one frame
+                respNapoveda.frameNStart = frameN  # exact frame index
+                if chciklavesu:
+                    respNapoveda.status = STARTED
+                else:
+                    respNapoveda.status = FINISHED #komponenta se nema spustit
+                # keyboard checking is just starting
+                respNapoveda.clock.reset()  # now t=0
+                event.clearEvents(eventType='keyboard')
+            if respNapoveda.status == STARTED:
+                theseKeys = event.getKeys(keyList=['right'])  
+                
+                # check for quit:
+                if "escape" in theseKeys:
+                    endExpNow = True
+                if len(theseKeys) > 0:  # at least one key was pressed
+                    respNapoveda.keys = theseKeys[-1]  # just the last key pressed
+                    respNapoveda.rt = respNapoveda.clock.getTime()
+                    # a response ends the routine
+                    continueRoutine = True
+                    respNapoveda.status = FINISHED #sama se asi nenastavi FINISHED, musim rucne
+                    chciklavesu = 0; #zatim nechci dalsi klavesu
+                    
+            if respNapoveda.status != FINISHED: 
+                frameNklavesa = frameN
+            
+            # *krizek_pauza* updates
+            if frameN >= frameNklavesa+120 and krizek_pauza.status == NOT_STARTED :
+                # keep track of start time/frame for later
+                krizek_pauza.tStart = t  # underestimates by a little under one frame
+                krizek_pauza.frameNStart = frameN  # exact frame index
+                krizek_pauza.setAutoDraw(True)
+            elif krizek_pauza.status == STARTED and frameN >= (krizek_pauza.frameNStart + 60) and respNapoveda.status == FINISHED: #predelano na frames 60Hz 7.6.2016
+                krizek_pauza.setAutoDraw(False)
+                    
             # check if all components have finished
             if not continueRoutine:  # a component has requested a forced-end of Routine
                 routineTimer.reset()  # if we abort early the non-slip timer needs reset
@@ -227,6 +280,11 @@ for thisTrial in trials:
         for thisComponent in pauzaComponents:
             if hasattr(thisComponent, "setAutoDraw"):
                 thisComponent.setAutoDraw(False)
+                
+        # check responses
+        if respNapoveda.keys in ['', [], None]:  # No response was made
+           respNapoveda.keys=None
+           
         thisExp.nextEntry()
         
     # completed pauza repeats of 'pauza_loop'
@@ -425,7 +483,9 @@ for thisTrial in trials:
     thisExp.nextEntry()
     
     if blokkonec > 0 and (blokcislo == 33 or blokcislo ==  66 or blokcislo == 99):
-        zbyvarepetic = 120
+        zbyvarepetic = 120 #vterin do konce pauzy
+        chciklavesu = chciklavesu_default; #pauza bude vyzadovat klavesu na konci
+        
         # set up handler to look after randomisation of conditions etc
         loopCekejDlouho = data.TrialHandler(nReps=zbyvarepetic, method=u'sequential', 
             extraInfo=expInfo, originPath=None,
