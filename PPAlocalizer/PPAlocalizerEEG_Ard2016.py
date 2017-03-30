@@ -24,6 +24,7 @@ arduino = Arduino()
 arduino.connect()
 print arduino.is_open()
 arduino.blink()
+arduino_up = False; #status, jestli posledni puls nahoru
 
 blokcislo = 0;
 ovocebylo = 0;
@@ -299,6 +300,7 @@ for thisTrial in trials:
     if corrans == 1:
         ovocebylo += 1
     
+    
     # update component parameters for each repeat
     image.setImage('imagesFMRI2016/'+obrazek)
     odpoved = event.BuilderKeyResponse()  # create an object of type KeyResponse
@@ -330,6 +332,8 @@ for thisTrial in trials:
             #pport.Out32(pport_addrr, 255) # sets all pins to low
             #pport.Out32(pport_addrr+2, 1) # strobe on
             arduino.send_pulse_up()
+            arduino_up = True
+            logging.log(level=logging.DATA, msg='Arduino pulse up')
             
         elif image.status == STARTED and frameN >= (image.frameNStart + 12): #predelano na frames - 7.6.2016
             image.setAutoDraw(False)
@@ -344,7 +348,12 @@ for thisTrial in trials:
             odpoved.clock.reset()  # now t=0
             event.clearEvents(eventType='keyboard')
         elif odpoved.status == STARTED and frameN >= (odpoved.frameNStart + 60): #most of one frame period left
+            #cas na odpoved uz vyprsel 60 frames = 1sec
             odpoved.status = STOPPED
+            if arduino_up: 
+                arduino.send_pulse_down() #nestacil odpovedet, chci stejne poslat puls down
+                arduino_up = False;
+                logging.log(level=logging.DATA, msg='Arduino pulse down')
         if odpoved.status == STARTED:
             theseKeys = event.getKeys(keyList=['space'])         
             
@@ -369,6 +378,8 @@ for thisTrial in trials:
                 #pport.Out32(pport_addrr, 4) # sets pin no.3 to high
                 #pport.Out32(pport_addrr+2, 0) # strobe off
                 arduino.send_pulse_down()
+                arduino_up = False
+                logging.log(level=logging.DATA, msg='Arduino pulse down')
         
         # *krizek* updates
         if frameN >= 12 and krizek.status == NOT_STARTED:
@@ -420,67 +431,8 @@ for thisTrial in trials:
     if odpoved.keys != None:  # we had a response
         trials.addData('odpoved.rt', odpoved.rt)
     
-    #------Prepare to start Routine "pauza2"-------
-    t = 0
-    pauza2Clock.reset()  # clock 
-    frameN = -1
-    
-        
-    # update component parameters for each repeat
-    # keep track of which components have finished
-    pauza2Components = []
-    pauza2Components.append(ISI)
-    for thisComponent in pauza2Components:
-        if hasattr(thisComponent, 'status'):
-            thisComponent.status = NOT_STARTED
-    
-    #-------Start Routine "pauza2"-------
-    continueRoutine = True
-    while continueRoutine:
-        # get current time
-        t = pauza2Clock.getTime()
-        frameN = frameN + 1  # number of completed frames (so 0 is the first frame)
-        # update/draw components on each frame
-        # *ISI* period
-        if frameN >= 0.0 and ISI.status == NOT_STARTED:
-            # keep track of start time/frame for later
-            ISI.tStart = t  # underestimates by a little under one frame
-            ISI.frameNStart = frameN  # exact frame index
-            ISI.start(3*frameDur)
-            #if len(theseKeys) == 0: #nestlacil klavesu
-            #pokud nestlacil klavesu, musim dat stejne strobe off  - 1.10.2014
-            #pport.Out32(pport_addrr, 4) # sets pin no.3 to high
-            #pport.Out32(pport_addrr+2, 0) # strobe off
-            arduino.send_pulse_down()
-            
-        elif ISI.status == STARTED: #one frame should pass before updating params and completing
-            ISI.complete() #finish the static period
-        
-        # check if all components have finished
-        if not continueRoutine:  # a component has requested a forced-end of Routine
-            routineTimer.reset()  # if we abort early the non-slip timer needs reset
-            break
-        continueRoutine = False  # will revert to True if at least one component still running
-        for thisComponent in pauza2Components:
-            if hasattr(thisComponent, "status") and thisComponent.status != FINISHED:
-                continueRoutine = True
-                break  # at least one component has not yet finished
-        
-        # check for quit (the Esc key)
-        if endExpNow or event.getKeys(keyList=["escape"]):
-            core.quit()
-        
-        # refresh the screen
-        if continueRoutine:  # don't flip if this routine is over or we'll get a blank screen
-            win.flip()
-        else:  # this Routine was not non-slip safe so reset non-slip timer
-            routineTimer.reset()   
-    
-    #-------Ending Routine "pauza2"-------
-    for thisComponent in pauza2Components:
-        if hasattr(thisComponent, "setAutoDraw"):
-            thisComponent.setAutoDraw(False)
-    thisExp.nextEntry()
+    # Calling nextEntry indicates to the ExperimentHandler that the current trial has ended and so further addData() calls correspond to the next trial.
+    thisExp.nextEntry() 
     
     if blokkonec > 0 and (blokcislo == 33 or blokcislo ==  66 or blokcislo == 99):
         zbyvarepetic = 120 #vterin do konce pauzy
@@ -562,7 +514,7 @@ for thisTrial in trials:
             
             zbyvarepetic = zbyvarepetic - 1
         #konec smycky 60x
-        thisExp.nextEntry()
+        #thisExp.nextEntry()
             
     # konec if cekej dlouho    
     # completed 60 repeats of 'loopCekejDlouho'

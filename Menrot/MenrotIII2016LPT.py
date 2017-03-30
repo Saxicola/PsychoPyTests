@@ -398,6 +398,7 @@ for thisTrial in trials:
             #pport.Out32(pport_addrr, 255) # sets all pins to low
             #pport.Out32(pport_addrr+2, 1) # strobe on
             arduino.send_pulse_up()
+            logging.log(level=logging.DATA, msg='Arduino pulse up')
              
         elif image.status == STARTED and t >= (0 + (2-win.monitorFramePeriod*0.75)): #most of one frame period left
             image.setAutoDraw(False)
@@ -430,6 +431,7 @@ for thisTrial in trials:
                 #pport.Out32(pport_addrr, 4) # sets pin no.3 to high
                 #pport.Out32(pport_addrr+2, 0) # strobe off
                 arduino.send_pulse_down()
+                logging.log(level=logging.DATA, msg='Arduino pulse down')
                 #print 'spravne: ' + str(odpoved.corr)
                 sumascore += odpoved.corr;
                 pokusy += 1; #pocitam jen pokusy kdy stlacil klavesu
@@ -450,6 +452,7 @@ for thisTrial in trials:
                 #pport.Out32(pport_addrr, 4) # sets pin no.3 to high
                 #pport.Out32(pport_addrr+2, 0) # strobe off
                 arduino.send_pulse_down()
+                logging.log(level=logging.DATA, msg='Arduino pulse down')
                 vynechanych += 1;
                 print 'ne - odpovedel'
                 
