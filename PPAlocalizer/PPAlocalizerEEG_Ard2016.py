@@ -40,6 +40,17 @@ dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 if dlg.OK == False: core.quit()  # user pressed cancel
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
 expInfo['expName'] = expName
+if expInfo['session']== '1':
+    csvfile = 'PPAconditionsEEG2016-10-24a.csv'
+    celkembloku = 66; #prvni cast souboru
+elif expInfo['session']== '2':
+    csvfile = 'PPAconditionsEEG2016-10-24b.csv'
+    celkembloku = 64; #druha cast souboru
+else:
+    csvfile = 'PPAconditionsEEG2016-10-24.csv'
+    celkembloku = 130; #cely soubor
+print 'csvfile: ' + csvfile    
+    
 
 # Setup filename for saving
 filename = 'data/%s_%s_%s' %(expInfo['participant'], expName, expInfo['date'])
@@ -125,7 +136,7 @@ routineTimer = core.CountdownTimer()  # to track time remaining of each (non-sli
 # set up handler to look after randomisation of conditions etc
 trials = data.TrialHandler(nReps=1, method='sequential', 
     extraInfo=expInfo, originPath=None,
-    trialList=data.importConditions('PPAconditionsEEG2016-10-24.csv'),
+    trialList=data.importConditions(csvfile),
     seed=None, name='trials')
 thisExp.addLoop(trials)  # add the loop to the experiment
 thisTrial = trials.trialList[0]  # so we can initialise stimuli with some values
@@ -173,7 +184,7 @@ for thisTrial in trials:
         # keep track of which components have finished
         pauzaComponents = []
         pauzaComponents.append(krizek_pauza)
-        textScore = 'blok ' + str(blokcislo) + '/130'
+        textScore = 'blok ' + str(blokcislo) + '/' + str(celkembloku)
         textScore += '\novoce: ' + str(ovocenalezeno) + '/' + str(ovocebylo)
         if reakcecas > 0: 
             textScore +=  '\ncas reakce: ' + ( "%.0f" %  (reakcecas*1000) ) + ' ms'
