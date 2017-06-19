@@ -205,7 +205,7 @@ for thisTrial in trials:
             textNapoveda = u'červená'
               
         text.setText(textNapoveda)
-        text3.setText( str(opakovani) + ' / 8')
+        text3.setText( str(opakovani) + '-' + str(opakovani_vbloku) +  ' / 8')
         sumascore = 0; # v kazdem bloku pocitam znova 26.1.2016  =====================================
         sumart = 0;
         pokusy = 0;
