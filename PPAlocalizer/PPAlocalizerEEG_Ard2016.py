@@ -185,7 +185,7 @@ for thisTrial in trials:
         pauzaComponents = []
         pauzaComponents.append(krizek_pauza)
         textScore = 'blok ' + str(blokcislo) + '/' + str(celkembloku)
-        textScore += '\novoce: ' + str(ovocenalezeno) + '/' + str(ovocebylo)
+        textScore += '\novoce/zelenina: ' + str(ovocenalezeno) + '/' + str(ovocebylo)
         if reakcecas > 0: 
             textScore +=  '\ncas reakce: ' + ( "%.0f" %  (reakcecas*1000) ) + ' ms'
         elif reakcecas == -1:
