@@ -10,7 +10,7 @@
 !*.csv
 # ale ignoruj datove csv, ktere tvori psychopy
 */**/data/*.csv
-
+*/**/data2D3D/*.*
 
 # ...even if they are in subdirectories
 !*/

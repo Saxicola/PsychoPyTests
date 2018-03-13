@@ -9,7 +9,7 @@ import sys
 import glob
 
 class Arduino:
-    def __init__(self, port="COM5", baudrate = 9600, timeout = 0.05, want_threading=False):
+    def __init__(self, port="COM9", baudrate = 9600, timeout = 0.05, want_threading=False):
         self.arduinoConnection = serial.Serial()
         self.arduinoConnection.port = port
         self.arduinoConnection.timeout = timeout
