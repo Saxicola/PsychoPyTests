@@ -346,7 +346,7 @@ for thisTrial in trials:
             arduino_up = True
             logging.log(level=logging.DATA, msg='Arduino pulse up')
             
-        elif image.status == STARTED and frameN >= (image.frameNStart + 12): #predelano na frames - 7.6.2016
+        elif image.status == STARTED and frameN >= (image.frameNStart + 12): #predelano na frames - 7.6.2016  #obrazek na 12 frames
             image.setAutoDraw(False) #po 12frame=200ms schovej obrazek
         
         # *odpoved* updates
@@ -358,15 +358,14 @@ for thisTrial in trials:
             # keyboard checking is just starting
             odpoved.clock.reset()  # now t=0
             event.clearEvents(eventType='keyboard')
-        elif odpoved.status == STARTED and frameN > (odpoved.frameNStart + 60): #konec casu na odpoved
-            #cas na odpoved uz vyprsel 60 frames = 1sec
-            odpoved.status = STOPPED  #ale krizek je jeste spusten 6 framu, teprve pak zkonci trial
+        elif odpoved.status == STARTED and frameN >= (odpoved.frameNStart + 60):  #odpoved na 60 frames
+            #cas na odpoved uz vyprsel 60 frames = 1 sec
+            odpoved.status = STOPPED #ale krizek je jeste spusten 6 framu, teprve pak zkonci trial
             if arduino_up: 
                 arduino.send_pulse_down() #nestacil odpovedet, chci stejne poslat puls down
                 arduino_up = False;
                 logging.log(level=logging.DATA, msg='Arduino pulse down')
-        
-        if odpoved.status == STARTED and frameN <= (odpoved.frameNStart + 60): #odpoved je mozna je 1sec=60frame po podnetu
+        if odpoved.status == STARTED and frameN <= (odpoved.frameNStart + 60): #odpoved je mozna je 1sec=60frame po podnetu:
             theseKeys = event.getKeys(keyList=['space'])         
             
             # check for quit:
@@ -394,13 +393,13 @@ for thisTrial in trials:
                 logging.log(level=logging.DATA, msg='Arduino pulse down')
         
         # *krizek* updates
-        if frameN >= 12 and krizek.status == NOT_STARTED:
+        if frameN >= 12 and krizek.status == NOT_STARTED:      #krizek az po 12 framech od zacatku trialu
             # keep track of start time/frame for later
             krizek.tStart = t  # underestimates by a little under one frame
             krizek.frameNStart = frameN  # exact frame index
-            krizek.setAutoDraw(True)    #po 12framech = 200ms zobraz krizek
-        elif krizek.status == STARTED and frameN >= (krizek.frameNStart + 54): #predelano na frames - 7.6.2016
-            krizek.setAutoDraw(False)  #po celkove 66frames = 1.1sec chci krizek zase skryt
+            krizek.setAutoDraw(True) #po 12framech = 200ms zobraz krizek
+        elif krizek.status == STARTED and frameN >= (krizek.frameNStart + 54): #predelano na frames - 7.6.2016   #krizek konci na frame 60
+            krizek.setAutoDraw(False) #po celkove 66frames = 1.1sec chci krizek zase skryt
             continueRoutine = False #kamil - po tehle komponente chci ukoncit, at zmacknul klavesu nebo ne
             
                
